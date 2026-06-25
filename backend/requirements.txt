@@ -1,0 +1,29 @@
+# Core ML / deep learning
+torch
+torchaudio
+
+# Audio processing
+librosa
+soundfile
+pyaudio
+
+# NLP (scam language detection)
+transformers
+tokenizers
+
+# Data handling
+pandas
+numpy
+scikit-learn
+
+# Speech-to-text (for converting call audio to text for NLP analysis)
+openai-whisper
+
+# Family alert system (SMS)
+twilio
+
+# Security (encrypting logs)
+cryptography
+
+# Optional: simple demo web UI
+flask

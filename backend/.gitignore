@@ -1,4 +1,44 @@
+# Virtual environment
 venv/
+env/
+ENV/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Datasets (too large for git, teammates download separately)
+data/
+*.csv
+*.wav
+*.flac
+
+# Trained models / extracted features (large binary files)
+models/*.pth
+models/*.pt
+models/*.npy
+models/*.h5
+models/*.pkl
+
+# Environment variables / secrets (Twilio keys, API keys)
 .env
+*.env
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
