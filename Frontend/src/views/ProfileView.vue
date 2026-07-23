@@ -1,11 +1,10 @@
-<!-- DAY 8 -->
 <template>
   <div class="page">
     <div class="topbar"><h2>Profile</h2><router-link to="/settings" class="back">⚙️</router-link></div>
     <div class="content">
       <div style="text-align:center; margin-bottom:20px;">
-        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#8A93A8,#4A5A73); margin:0 auto 10px; display:flex;align-items:center;justify-content:center; color:#fff; font-size:26px; font-weight:700;">R</div>
-        <div style="font-weight:800; font-size:17px;">Ramesh Gupta</div>
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#8A93A8,#4A5A73); margin:0 auto 10px; display:flex;align-items:center;justify-content:center; color:#fff; font-size:26px; font-weight:700;">{{ initial }}</div>
+        <div style="font-weight:800; font-size:17px;">{{ fullName }}</div>
         <div class="muted">Member since Jan 2026</div>
       </div>
 
@@ -39,7 +38,7 @@
 
       <div class="label">Emergency Contacts</div>
       <div class="card row" style="cursor:pointer;" @click="$router.push('/contacts')">
-        <span>2 contacts saved</span><span class="muted">›</span>
+        <span>{{ contactsCount }} contact{{ contactsCount === 1 ? '' : 's' }} saved</span><span class="muted">›</span>
       </div>
 
       <div class="label">Account Information</div>
@@ -52,13 +51,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
 
 const STORAGE_KEY = 'digitalBodyguard.profile'
 
+const fullName = ref('Ramesh Gupta')
 const savedPhone = ref('+91 98xxx xx000')
 const savedEmail = ref('ramesh@email.com')
+const contactsCount = ref(0)
+
+const initial = computed(() => fullName.value.charAt(0).toUpperCase() || 'U')
 
 const editing = ref(false)
 const phoneError = ref('')
@@ -66,11 +69,25 @@ const emailError = ref('')
 const form = reactive({ phone: '', email: '' })
 
 function loadProfile() {
-  const saved = localStorage.getItem(STORAGE_KEY)
-  if (saved) {
-    const data = JSON.parse(saved)
-    savedPhone.value = data.phone
-    savedEmail.value = data.email
+  const savedProfile = localStorage.getItem(STORAGE_KEY)
+  const savedAccount = localStorage.getItem('digitalBodyguard.account')
+
+  if (savedAccount) {
+    const account = JSON.parse(savedAccount)
+    if (account.name) fullName.value = account.name
+    if (account.phone) savedPhone.value = account.phone
+    if (account.email) savedEmail.value = account.email
+  }
+
+  if (savedProfile) {
+    const data = JSON.parse(savedProfile)
+    if (data.phone) savedPhone.value = data.phone
+    if (data.email) savedEmail.value = data.email
+  }
+
+  const savedContacts = localStorage.getItem('digitalBodyguard.contacts')
+  if (savedContacts) {
+    contactsCount.value = JSON.parse(savedContacts).length
   }
 }
 

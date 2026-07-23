@@ -1,31 +1,82 @@
-<!-- DAY 2 -->
 <template>
   <div class="page">
     <div class="content" style="padding-top:60px;">
-      <h2 style="margin-bottom:4px;">Welcome back</h2>
-      <p class="muted" style="margin-bottom:26px;">Log in to keep your protection active</p>
+      <h2 style="margin-bottom:4px;">{{ t('login.title') }}</h2>
+      <p class="muted" style="margin-bottom:26px;">{{ t('login.subtitle') }}</p>
 
-      <label class="label">Email or Phone</label>
-      <input class="field" v-model="email" placeholder="e.g. name@email.com" />
+      <label class="label">{{ t('login.emailLabel') }}</label>
+      <input class="field" v-model="email" placeholder="e.g. name@email.com" :style="errors.email ? 'border-color:var(--red);' : ''" />
+      <div v-if="errors.email" class="field-error">{{ errors.email }}</div>
 
-      <label class="label">Password</label>
-      <input class="field" type="password" v-model="password" placeholder="••••••••" />
+      <label class="label">{{ t('login.passwordLabel') }}</label>
+      <input class="field" type="password" v-model="password" placeholder="••••••••" :style="errors.password ? 'border-color:var(--red);' : ''" />
+      <div v-if="errors.password" class="field-error">{{ errors.password }}</div>
 
       <div class="row" style="margin-bottom:20px;">
-        <label class="muted"><input type="checkbox" /> Remember me</label>
-        <router-link to="/help" class="muted" style="text-decoration:underline;">Forgot Password?</router-link>
+        <label class="muted"><input type="checkbox" /> {{ t('login.remember') }}</label>
+        <router-link to="/help" class="muted" style="text-decoration:underline;">{{ t('login.forgot') }}</router-link>
       </div>
 
-      <button class="btn btn-primary" @click="$router.push('/dashboard')">Log In</button>
+      <div v-if="formError" class="field-error" style="margin-bottom:12px;">{{ formError }}</div>
+
+      <button class="btn btn-primary" @click="handleLogin">{{ t('login.button') }}</button>
       <p class="muted" style="text-align:center; margin-top:14px;">
-        New here? <router-link to="/register" style="color:var(--navy); font-weight:700;">Create an account</router-link>
+        {{ t('login.noAccount') }} <router-link to="/register" style="color:var(--navy); font-weight:700;">{{ t('login.createAccount') }}</router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { t } from '../i18n'
+
+const router = useRouter()
 const email = ref('')
 const password = ref('')
+const errors = reactive({ email: '', password: '' })
+const formError = ref('')
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function validate() {
+  errors.email = ''
+  errors.password = ''
+
+  if (!emailPattern.test(email.value.trim())) errors.email = 'Please enter a valid email address.'
+  if (!password.value) errors.password = 'Please enter your password.'
+
+  return !errors.email && !errors.password
+}
+
+function handleLogin() {
+  formError.value = ''
+  if (!validate()) return
+
+  const saved = localStorage.getItem('digitalBodyguard.account')
+  if (!saved) {
+    formError.value = 'No account found. Please create an account first.'
+    return
+  }
+
+  const account = JSON.parse(saved)
+  const enteredEmail = email.value.trim().toLowerCase()
+
+  if (enteredEmail !== account.email || password.value !== account.password) {
+    formError.value = 'Incorrect email or password. Please try again.'
+    return
+  }
+
+  localStorage.setItem('digitalBodyguard.loggedIn', '1')
+  router.push('/dashboard')
+}
 </script>
+
+<style scoped>
+.field-error {
+  color: var(--red);
+  font-size: 12px;
+  margin: -6px 0 12px;
+}
+</style>

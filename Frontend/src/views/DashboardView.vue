@@ -1,10 +1,9 @@
-<!-- DAY 3 -->
 <template>
   <div class="page">
     <div class="topbar">
       <div>
         <div class="muted">{{ t('dashboard.greeting') }}</div>
-        <h2>Ramesh 👋</h2>
+        <h2>{{ userName }} 👋</h2>
       </div>
       <router-link to="/settings" class="back">⚙️</router-link>
     </div>
@@ -54,11 +53,23 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
 import { t } from '../i18n'
+
+const userName = ref('there')
+
 const recent = [
   { name:'Riya (Daughter)', time:'Today, 9:10 AM', tag:'safe', pillClass:'pill-green' },
   { name:'Unknown Number', time:'Today, 8:42 AM', tag:'scam', pillClass:'pill-red' },
   { name:'Bank Helpline', time:'Yesterday, 6:15 PM', tag:'safe', pillClass:'pill-green' },
 ]
+
+onMounted(() => {
+  const saved = localStorage.getItem('digitalBodyguard.account')
+  if (saved) {
+    const account = JSON.parse(saved)
+    if (account.name) userName.value = account.name.split(' ')[0]
+  }
+})
 </script>
