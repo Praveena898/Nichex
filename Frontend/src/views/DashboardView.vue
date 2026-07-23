@@ -22,22 +22,25 @@
       <div class="card">
         <div class="label" style="margin-bottom:10px;">{{ t('dashboard.today') }}</div>
         <div class="row">
-          <div style="text-align:center;"><div style="font-size:20px;font-weight:800;">6</div><div class="muted">{{ t('dashboard.calls') }}</div></div>
-          <div style="text-align:center;"><div style="font-size:20px;font-weight:800; color:var(--green);">5</div><div class="muted">{{ t('dashboard.safe') }}</div></div>
-          <div style="text-align:center;"><div style="font-size:20px;font-weight:800; color:var(--amber);">0</div><div class="muted">{{ t('dashboard.suspicious') }}</div></div>
-          <div style="text-align:center;"><div style="font-size:20px;font-weight:800; color:var(--red);">1</div><div class="muted">{{ t('dashboard.scam') }}</div></div>
+          <div style="text-align:center;"><div style="font-size:20px;font-weight:800;">{{ stats.total }}</div><div class="muted">{{ t('dashboard.calls') }}</div></div>
+          <div style="text-align:center;"><div style="font-size:20px;font-weight:800; color:var(--green);">{{ stats.safe }}</div><div class="muted">{{ t('dashboard.safe') }}</div></div>
+          <div style="text-align:center;"><div style="font-size:20px;font-weight:800; color:var(--amber);">{{ stats.suspicious }}</div><div class="muted">{{ t('dashboard.suspicious') }}</div></div>
+          <div style="text-align:center;"><div style="font-size:20px;font-weight:800; color:var(--red);">{{ stats.scam }}</div><div class="muted">{{ t('dashboard.scam') }}</div></div>
         </div>
       </div>
 
       <div class="label">{{ t('dashboard.recent') }}</div>
-      <div class="card" v-for="c in recent" :key="c.name" style="margin-bottom:10px;">
+      <div class="card" v-for="c in recent" :key="c.id" style="margin-bottom:10px;">
         <div class="row">
           <div>
             <div style="font-weight:700;">{{ c.name }}</div>
             <div class="muted">{{ c.time }}</div>
           </div>
-          <span class="pill" :class="c.pillClass">{{ t('dashboard.' + c.tag) }}</span>
+          <span class="pill" :class="pillClass(c.tag)">{{ t('dashboard.' + c.tag) }}</span>
         </div>
+      </div>
+      <div v-if="recent.length === 0" class="card">
+        <p class="muted" style="margin:0;">No calls analyzed yet.</p>
       </div>
 
       <div class="label">{{ t('dashboard.quickActions') }}</div>
@@ -56,14 +59,15 @@
 import { ref, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
 import { t } from '../i18n'
+import { loadCalls, getStats } from '../callLog'
 
 const userName = ref('there')
+const recent = ref([])
+const stats = ref({ total: 0, safe: 0, suspicious: 0, scam: 0 })
 
-const recent = [
-  { name:'Riya (Daughter)', time:'Today, 9:10 AM', tag:'safe', pillClass:'pill-green' },
-  { name:'Unknown Number', time:'Today, 8:42 AM', tag:'scam', pillClass:'pill-red' },
-  { name:'Bank Helpline', time:'Yesterday, 6:15 PM', tag:'safe', pillClass:'pill-green' },
-]
+function pillClass(tag) {
+  return { safe: 'pill-green', suspicious: 'pill-amber', scam: 'pill-red' }[tag]
+}
 
 onMounted(() => {
   const saved = localStorage.getItem('digitalBodyguard.account')
@@ -71,5 +75,8 @@ onMounted(() => {
     const account = JSON.parse(saved)
     if (account.name) userName.value = account.name.split(' ')[0]
   }
+
+  recent.value = loadCalls().slice(0, 3)
+  stats.value = getStats()
 })
 </script>

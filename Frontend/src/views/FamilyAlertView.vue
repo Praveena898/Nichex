@@ -1,3 +1,4 @@
+<!-- DAY 5 -->
 <template>
   <div class="page">
     <div class="topbar">
@@ -68,6 +69,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { addFamilyAlert } from '../familyAlertLog'
 
 const status = ref('sending')
 const contacts = ref([])
@@ -99,6 +101,7 @@ onMounted(() => {
   loadContacts()
   setTimeout(() => {
     status.value = 'sent'
+    contacts.value.forEach(c => addFamilyAlert({ contactName: c.name }))
   }, 1200)
 })
 </script>

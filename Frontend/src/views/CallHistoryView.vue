@@ -1,4 +1,3 @@
-<!-- DAY 6 -->
 <template>
   <div class="page">
     <div class="topbar"><h2>{{ t('history.title') }}</h2><span style="width:36px;"></span></div>
@@ -13,18 +12,23 @@
             <div style="font-weight:700;">{{ c.name }}</div>
             <div class="muted">{{ c.time }}</div>
           </div>
-          <span class="pill" :class="c.pillClass">{{ tagLabel(c.tag) }}</span>
+          <span class="pill" :class="pillClass(c.tag)">{{ tagLabel(c.tag) }}</span>
         </div>
       </router-link>
+
+      <div v-if="calls.length === 0" class="card" style="text-align:center;">
+        <p class="muted" style="margin:0;">No calls yet. Once Digital Bodyguard analyzes a call, it'll show up here.</p>
+      </div>
     </div>
     <AppShell active="history" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
 import { t } from '../i18n'
+import { loadCalls } from '../callLog'
 
 const active = ref('all')
 const filters = computed(() => [
@@ -34,16 +38,18 @@ const filters = computed(() => [
   { key: 'scam', label: t('history.scam') },
 ])
 
-const calls = [
-  { id:1, name:'Riya (Daughter)', time:'Today, 9:10 AM', tag:'safe', pillClass:'pill-green' },
-  { id:2, name:'Unknown Number', time:'Today, 8:42 AM', tag:'scam', pillClass:'pill-red' },
-  { id:3, name:'Bank Helpline', time:'Yesterday, 6:15 PM', tag:'safe', pillClass:'pill-green' },
-  { id:4, name:'+91 90xxx xx221', time:'Yesterday, 2:03 PM', tag:'suspicious', pillClass:'pill-amber' },
-]
+const calls = ref([])
 
-const filtered = computed(() => active.value==='all' ? calls : calls.filter(c=>c.tag===active.value))
+const filtered = computed(() => active.value === 'all' ? calls.value : calls.value.filter(c => c.tag === active.value))
 
+function pillClass(tag) {
+  return { safe: 'pill-green', suspicious: 'pill-amber', scam: 'pill-red' }[tag]
+}
 function tagLabel(tag) {
   return t('history.' + tag)
 }
+
+onMounted(() => {
+  calls.value = loadCalls()
+})
 </script>

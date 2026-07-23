@@ -1,4 +1,3 @@
-<!-- DAY 4 -->
 <template>
   <div class="page">
     <div class="content" style="padding-top:30px;">
@@ -31,14 +30,29 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { addCall } from '../callLog'
+
 const router = useRouter()
 const progress = ref(0)
+
 onMounted(() => {
   const t = setInterval(() => {
     progress.value += 20
     if (progress.value >= 100) {
       clearInterval(t)
-      setTimeout(() => router.push('/result/scam'), 400)
+      setTimeout(() => {
+        const entry = addCall({
+          name: 'Unknown Number',
+          phone: '+91 98xxx xx412',
+          tag: 'scam',
+          riskScore: 89,
+          confidence: 94,
+          keywords: ['OTP', 'urgent', "don't tell anyone"],
+          report: 'Synthetic voice patterns detected in the first 8 seconds. Caller requested OTP under urgency framing.',
+          duration: '2m 14s'
+        })
+        router.push('/result/scam?callId=' + entry.id)
+      }, 400)
     }
   }, 400)
 })

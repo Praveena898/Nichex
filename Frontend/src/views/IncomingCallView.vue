@@ -1,7 +1,6 @@
-<!-- DAY 3 -->
 <template>
   <div class="page" style="background:var(--navy); color:#fff; align-items:center; justify-content:center;">
-    <div style="position:absolute; top:20px; right:20px;" class="pill" style="background:rgba(255,255,255,0.12); color:#fff;">🛡️ AI Protection Enabled</div>
+    <div style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.12); color:#fff;" class="pill">🛡️ AI Protection Enabled</div>
     <div style="text-align:center;">
       <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#8A93A8,#4A5A73); display:flex;align-items:center;justify-content:center; font-size:36px; font-weight:700; margin:0 auto 18px;">?</div>
       <h2 style="color:#fff;">Unknown Caller</h2>
