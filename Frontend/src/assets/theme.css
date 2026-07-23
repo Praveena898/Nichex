@@ -83,3 +83,26 @@ a{ color: inherit; text-decoration:none; }
 .muted{ color:var(--slate); font-size:13px; }
 .row{ display:flex; align-items:center; justify-content:space-between; }
 .divider{ height:1px; background:var(--ring-off); margin:14px 0; }
+
+/* ---- Dark mode ---- */
+html.dark-mode{
+  --navy: #EDEFF5;
+  --slate: #A7B0C4;
+  --paper: #10182B;
+  --card: #1B2740;
+  --ring-off: #2C3A57;
+}
+html.dark-mode body{ background: var(--paper); }
+html.dark-mode .btn-primary{ background: #3D5AA8; color:#fff; }
+html.dark-mode .btn-ghost{ background: var(--card); color: var(--navy); }
+
+/* ---- Large text / accessibility mode ---- */
+html.large-text body{ font-size:18px; }
+html.large-text .btn{ font-size:18px; padding:16px; }
+html.large-text .field{ font-size:17px; padding:15px 16px; }
+html.large-text .label{ font-size:14px; }
+html.large-text .muted{ font-size:15px; }
+html.large-text .topbar h2{ font-size:21px; }
+html.large-text .pill{ font-size:14px; padding:8px 14px; }
+html.large-text .card{ font-size:15.5px; }
+html.large-text .navitem{ font-size:12px; }

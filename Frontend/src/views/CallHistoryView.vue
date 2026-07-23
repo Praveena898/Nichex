@@ -1,10 +1,10 @@
 <!-- DAY 6 -->
 <template>
   <div class="page">
-    <div class="topbar"><h2>Call History</h2><span style="width:36px;"></span></div>
+    <div class="topbar"><h2>{{ t('history.title') }}</h2><span style="width:36px;"></span></div>
     <div class="content">
       <div class="row" style="gap:8px; margin-bottom:14px;">
-        <button v-for="f in filters" :key="f" class="pill" :class="active===f ? 'pill-green' : ''" :style="active!==f ? 'background:var(--card); color:var(--slate); border:1px solid var(--ring-off);' : ''" @click="active=f" style="flex:1; justify-content:center;">{{ f }}</button>
+        <button v-for="f in filters" :key="f.key" class="pill" :class="active===f.key ? 'pill-green' : ''" :style="active!==f.key ? 'background:var(--card); color:var(--slate); border:1px solid var(--ring-off);' : ''" @click="active=f.key" style="flex:1; justify-content:center;">{{ f.label }}</button>
       </div>
 
       <router-link v-for="c in filtered" :key="c.id" :to="'/history/'+c.id" class="card" style="display:block; margin-bottom:10px;">
@@ -13,7 +13,7 @@
             <div style="font-weight:700;">{{ c.name }}</div>
             <div class="muted">{{ c.time }}</div>
           </div>
-          <span class="pill" :class="c.pillClass">{{ c.tag }}</span>
+          <span class="pill" :class="c.pillClass">{{ tagLabel(c.tag) }}</span>
         </div>
       </router-link>
     </div>
@@ -24,13 +24,26 @@
 <script setup>
 import { ref, computed } from 'vue'
 import AppShell from '../components/AppShell.vue'
-const active = ref('All')
-const filters = ['All', 'Safe', 'Suspicious', 'Scam']
+import { t } from '../i18n'
+
+const active = ref('all')
+const filters = computed(() => [
+  { key: 'all', label: t('history.all') },
+  { key: 'safe', label: t('history.safe') },
+  { key: 'suspicious', label: t('history.suspicious') },
+  { key: 'scam', label: t('history.scam') },
+])
+
 const calls = [
-  { id:1, name:'Riya (Daughter)', time:'Today, 9:10 AM', tag:'Safe', pillClass:'pill-green' },
-  { id:2, name:'Unknown Number', time:'Today, 8:42 AM', tag:'Scam', pillClass:'pill-red' },
-  { id:3, name:'Bank Helpline', time:'Yesterday, 6:15 PM', tag:'Safe', pillClass:'pill-green' },
-  { id:4, name:'+91 90xxx xx221', time:'Yesterday, 2:03 PM', tag:'Suspicious', pillClass:'pill-amber' },
+  { id:1, name:'Riya (Daughter)', time:'Today, 9:10 AM', tag:'safe', pillClass:'pill-green' },
+  { id:2, name:'Unknown Number', time:'Today, 8:42 AM', tag:'scam', pillClass:'pill-red' },
+  { id:3, name:'Bank Helpline', time:'Yesterday, 6:15 PM', tag:'safe', pillClass:'pill-green' },
+  { id:4, name:'+91 90xxx xx221', time:'Yesterday, 2:03 PM', tag:'suspicious', pillClass:'pill-amber' },
 ]
-const filtered = computed(() => active.value==='All' ? calls : calls.filter(c=>c.tag===active.value))
+
+const filtered = computed(() => active.value==='all' ? calls : calls.filter(c=>c.tag===active.value))
+
+function tagLabel(tag) {
+  return t('history.' + tag)
+}
 </script>
