@@ -112,6 +112,114 @@ const dictionaries = {
       title: 'कॉल इतिहास',
       all: 'सभी', safe: 'सुरक्षित', suspicious: 'संदिग्ध', scam: 'धोखाधड़ी'
     }
+  },
+  kok: {
+    nav: { home: 'घर', history: 'इतिहास', alerts: 'सतर्कता', contacts: 'कुटुंब', profile: 'प्रोफायल' },
+    common: { applyChanges: 'बदल लागू करात', applied: 'लागू जाला ✓', cancel: 'रद्द करात', continueText: 'फुडें वचात' },
+    splash: { name: 'डिजिटल बॉडीगार्ड', tagline: 'दर एका कॉलाची सुरक्षा, दर दिस' },
+    onboarding: { getStarted: 'सुरू करात', haveAccount: 'म्हज्याकडे पयलीच खातें आसा', next: 'फुडें' },
+    login: {
+      title: 'परत येवकार',
+      subtitle: 'सुरक्षा चालू दवरपाक लॉगीन करात',
+      emailLabel: 'ईमेल वा फोन',
+      passwordLabel: 'पासवर्ड',
+      remember: 'म्हाका याद दवरात',
+      forgot: 'पासवर्ड विसरलात?',
+      button: 'लॉगीन करात',
+      noAccount: 'नवे आसात?',
+      createAccount: 'खातें तयार करात'
+    },
+    register: {
+      title: 'खातें तयार करात',
+      nameLabel: 'पुराय नांव',
+      phoneLabel: 'फोन नंबर',
+      emailLabel: 'ईमेल',
+      passwordLabel: 'पासवर्ड',
+      contactLabel: 'आणीबाणीचो संपर्क (कुटुंब)',
+      button: 'खातें तयार करात',
+      haveAccount: 'पयलीच खातें आसा?',
+      login: 'लॉगीन करात'
+    },
+    dashboard: {
+      greeting: 'दनपारां बरे,',
+      status: 'सुरक्षा स्थिती',
+      active: 'सक्रीय आनी देखरेख करता',
+      today: 'आयचें काम',
+      calls: 'कॉल्स', safe: 'सुरक्षीत', suspicious: 'संशयास्पद', scam: 'फसवणूक',
+      recent: 'अलीकडले कॉल्स',
+      quickActions: 'त्वरीत कारवाय',
+      callHistory: 'कॉल इतिहास',
+      contacts: 'संपर्क',
+      emergency: 'आणीबाणी — कुटुंबाक कळयात'
+    },
+    settings: {
+      title: 'सेटिंग्स',
+      darkMode: 'डार्क मोड',
+      language: 'भाशा',
+      accessibility: 'प्रवेशयोग्यताय (व्हड मजकूर)',
+      notifications: 'सुचोवणी सेटिंग्स',
+      privacy: 'खाजगीपण सेटिंग्स',
+      about: 'ह्या ऍपाविशीं',
+      logout: 'लॉगआवुट'
+    },
+    history: {
+      title: 'कॉल इतिहास',
+      all: 'सगळें', safe: 'सुरक्षीत', suspicious: 'संशयास्पद', scam: 'फसवणूक'
+    }
+  },
+  ml: {
+    nav: { home: 'ഹോം', history: 'ചരിത്രം', alerts: 'അലേർട്ടുകൾ', contacts: 'കുടുംബം', profile: 'പ്രൊഫൈൽ' },
+    common: { applyChanges: 'മാറ്റങ്ങൾ പ്രയോഗിക്കുക', applied: 'പ്രയോഗിച്ചു ✓', cancel: 'റദ്ദാക്കുക', continueText: 'തുടരുക' },
+    splash: { name: 'ഡിജിറ്റൽ ബോഡിഗാർഡ്', tagline: 'ഓരോ കോളും, ഓരോ ദിവസവും സംരക്ഷിക്കുന്നു' },
+    onboarding: { getStarted: 'ആരംഭിക്കുക', haveAccount: 'എനിക്ക് ഇതിനകം ഒരു അക്കൗണ്ട് ഉണ്ട്', next: 'അടുത്തത്' },
+    login: {
+      title: 'തിരികെ സ്വാഗതം',
+      subtitle: 'സംരക്ഷണം സജീവമായി നിലനിർത്താൻ ലോഗിൻ ചെയ്യുക',
+      emailLabel: 'ഇമെയിൽ അല്ലെങ്കിൽ ഫോൺ',
+      passwordLabel: 'പാസ്‌വേഡ്',
+      remember: 'എന്നെ ഓർക്കുക',
+      forgot: 'പാസ്‌വേഡ് മറന്നോ?',
+      button: 'ലോഗിൻ ചെയ്യുക',
+      noAccount: 'പുതിയതാണോ?',
+      createAccount: 'ഒരു അക്കൗണ്ട് സൃഷ്ടിക്കുക'
+    },
+    register: {
+      title: 'അക്കൗണ്ട് സൃഷ്ടിക്കുക',
+      nameLabel: 'മുഴുവൻ പേര്',
+      phoneLabel: 'ഫോൺ നമ്പർ',
+      emailLabel: 'ഇമെയിൽ',
+      passwordLabel: 'പാസ്‌വേഡ്',
+      contactLabel: 'അടിയന്തര ബന്ധം (കുടുംബം)',
+      button: 'അക്കൗണ്ട് സൃഷ്ടിക്കുക',
+      haveAccount: 'ഇതിനകം അക്കൗണ്ട് ഉണ്ടോ?',
+      login: 'ലോഗിൻ ചെയ്യുക'
+    },
+    dashboard: {
+      greeting: 'ഉച്ചയ്ക്ക് ശേഷം നമസ്കാരം,',
+      status: 'സംരക്ഷണ നില',
+      active: 'സജീവം & നിരീക്ഷണത്തിൽ',
+      today: 'ഇന്നത്തെ പ്രവർത്തനം',
+      calls: 'കോളുകൾ', safe: 'സുരക്ഷിതം', suspicious: 'സംശയാസ്‌പദം', scam: 'തട്ടിപ്പ്',
+      recent: 'സമീപകാല കോളുകൾ',
+      quickActions: 'ദ്രുത പ്രവർത്തനങ്ങൾ',
+      callHistory: 'കോൾ ചരിത്രം',
+      contacts: 'ബന്ധങ്ങൾ',
+      emergency: 'അടിയന്തരാവസ്ഥ — എന്റെ കുടുംബത്തെ അറിയിക്കുക'
+    },
+    settings: {
+      title: 'ക്രമീകരണങ്ങൾ',
+      darkMode: 'ഡാർക്ക് മോഡ്',
+      language: 'ഭാഷ',
+      accessibility: 'ഉപയോഗസൗകര്യം',
+      notifications: 'അറിയിപ്പ് ക്രമീകരണങ്ങൾ',
+      privacy: 'സ്വകാര്യതാ ക്രമീകരണങ്ങൾ',
+      about: 'ഈ ആപ്പിനെക്കുറിച്ച്',
+      logout: 'ലോഗ് ഔട്ട്'
+    },
+    history: {
+      title: 'കോൾ ചരിത്രം',
+      all: 'എല്ലാം', safe: 'സുരക്ഷിതം', suspicious: 'സംശയാസ്‌പദം', scam: 'തട്ടിപ്പ്'
+    }
   }
 }
 

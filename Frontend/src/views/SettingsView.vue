@@ -1,7 +1,3 @@
-Good catch — right now those toggles save instantly instead of waiting for "Apply Changes" like the rest. Let's fix that by giving them the same draft/applied pattern. Replace all of src/views/SettingsView.vue with:
-
-vue
-<!-- DAY 8 -->
 <template>
   <div class="page">
     <div class="topbar">
@@ -22,6 +18,8 @@ vue
           <select v-model="localeDraft" class="field" style="width:auto; margin:0; padding:6px 10px;">
             <option value="en">English</option>
             <option value="hi">हिन्दी (Hindi)</option>
+            <option value="kok">कोंकणी (Konkani)</option>
+            <option value="ml">മലയാളം (Malayalam)</option>
           </select>
         </div>
       </div>
@@ -84,7 +82,6 @@ const localeDraft = ref(locale.value)
 const showNotifPanel = ref(false)
 const showPrivacyPanel = ref(false)
 
-// "Applied" (currently active) state
 const notifSettings = reactive({
   scamAlerts: true,
   familyAlerts: true,
@@ -96,7 +93,6 @@ const privacySettings = reactive({
   shareWithFamily: true
 })
 
-// "Draft" (what the toggles currently show, not yet applied) state
 const notifDraft = reactive({ ...notifSettings })
 const privacyDraft = reactive({ ...privacySettings })
 
