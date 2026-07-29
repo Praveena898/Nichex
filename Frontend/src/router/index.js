@@ -4,6 +4,7 @@ const routes = [
   { path: '/', name: 'splash', component: () => import('../views/SplashView.vue') },
   { path: '/onboarding', name: 'onboarding', component: () => import('../views/OnboardingView.vue') },
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue') },
+  { path: '/forgot-password', name: 'forgot-password', component: () => import('../views/ForgotPasswordView.vue') },
   { path: '/register', name: 'register', component: () => import('../views/RegisterView.vue') },
   { path: '/dashboard', name: 'dashboard', component: () => import('../views/DashboardView.vue') },
   { path: '/incoming-call', name: 'incoming-call', component: () => import('../views/IncomingCallView.vue') },

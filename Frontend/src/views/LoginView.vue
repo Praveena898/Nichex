@@ -1,7 +1,16 @@
 <template>
   <div class="page">
-    <div class="content" style="padding-top:60px;">
-      <h2 style="margin-bottom:4px;">{{ t('login.title') }}</h2>
+    <div class="topbar">
+      <button class="back-arrow" @click="$router.back()" aria-label="Go back">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <h2>{{ t('login.title') }}</h2>
+      <span style="width:36px;"></span>
+    </div>
+
+    <div class="content" style="padding-top:20px;">
       <p class="muted" style="margin-bottom:26px;">{{ t('login.subtitle') }}</p>
 
       <label class="label">{{ t('login.emailLabel') }}</label>
@@ -14,7 +23,7 @@
 
       <div class="row" style="margin-bottom:20px;">
         <label class="muted"><input type="checkbox" /> {{ t('login.remember') }}</label>
-        <router-link to="/help" class="muted" style="text-decoration:underline;">{{ t('login.forgot') }}</router-link>
+        <router-link to="/forgot-password" class="muted" style="text-decoration:underline;">{{ t('login.forgot') }}</router-link>
       </div>
 
       <div v-if="formError" class="field-error" style="margin-bottom:12px;">{{ formError }}</div>
@@ -74,6 +83,18 @@ function handleLogin() {
 </script>
 
 <style scoped>
+.back-arrow {
+  background: none;
+  border: none;
+  color: var(--navy);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.back-arrow:hover { opacity: 0.6; }
 .field-error {
   color: var(--red);
   font-size: 12px;

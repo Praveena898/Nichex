@@ -20,8 +20,8 @@
       </div>
 
       <div class="card" v-if="!editing">
-        <div class="row" style="margin-bottom:8px;"><span class="muted">Phone</span><span>{{ savedPhone }}</span></div>
-        <div class="row"><span class="muted">Email</span><span>{{ savedEmail }}</span></div>
+        <div class="row" style="margin-bottom:8px;"><span class="muted">Phone</span><span>{{ account.phone || '—' }}</span></div>
+        <div class="row"><span class="muted">Email</span><span>{{ account.email || '—' }}</span></div>
       </div>
 
       <div class="card" v-else>
@@ -54,35 +54,23 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
 
-const STORAGE_KEY = 'digitalBodyguard.profile'
+const ACCOUNT_KEY = 'digitalBodyguard.account'
 
-const fullName = ref('Ramesh Gupta')
-const savedPhone = ref('+91 98xxx xx000')
-const savedEmail = ref('ramesh@email.com')
+const account = ref({ name: '', phone: '', email: '' })
 const contactsCount = ref(0)
 
-const initial = computed(() => fullName.value.charAt(0).toUpperCase() || 'U')
+const fullName = computed(() => account.value.name || 'Your Name')
+const initial = computed(() => (account.value.name || 'U').charAt(0).toUpperCase())
 
 const editing = ref(false)
 const phoneError = ref('')
 const emailError = ref('')
 const form = reactive({ phone: '', email: '' })
 
-function loadProfile() {
-  const savedProfile = localStorage.getItem(STORAGE_KEY)
-  const savedAccount = localStorage.getItem('digitalBodyguard.account')
-
-  if (savedAccount) {
-    const account = JSON.parse(savedAccount)
-    if (account.name) fullName.value = account.name
-    if (account.phone) savedPhone.value = account.phone
-    if (account.email) savedEmail.value = account.email
-  }
-
-  if (savedProfile) {
-    const data = JSON.parse(savedProfile)
-    if (data.phone) savedPhone.value = data.phone
-    if (data.email) savedEmail.value = data.email
+function loadAccount() {
+  const saved = localStorage.getItem(ACCOUNT_KEY)
+  if (saved) {
+    account.value = JSON.parse(saved)
   }
 
   const savedContacts = localStorage.getItem('digitalBodyguard.contacts')
@@ -93,8 +81,8 @@ function loadProfile() {
 
 function toggleEdit() {
   if (!editing.value) {
-    form.phone = savedPhone.value
-    form.email = savedEmail.value
+    form.phone = account.value.phone || ''
+    form.email = account.value.email || ''
     phoneError.value = ''
     emailError.value = ''
   }
@@ -120,13 +108,15 @@ function validate() {
 
 function saveDetails() {
   if (!validate()) return
-  savedPhone.value = form.phone
-  savedEmail.value = form.email
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ phone: savedPhone.value, email: savedEmail.value }))
+
+  account.value.phone = form.phone
+  account.value.email = form.email.trim().toLowerCase()
+  localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account.value))
+
   editing.value = false
 }
 
-onMounted(loadProfile)
+onMounted(loadAccount)
 </script>
 
 <style scoped>
