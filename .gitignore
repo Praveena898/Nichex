@@ -38,3 +38,10 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Node.js dependencies
+node_modules/
+Frontend/node_modules/
+
+# Package lock (optional - keep only if your team doesn't track it)
+# package-lock.json
