@@ -1,17 +1,17 @@
 """
-Pydantic schemas = the "shape" of data going in and out of the API.
+Pydantic schemas = the shape of data going in and out of the API.
 models.py defines your DATABASE tables.
 schemas.py defines what JSON the API accepts and returns.
-They look similar but serve different jobs — this is normal in FastAPI projects.
 """
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
 
-# ---------- USERS ----------
+# ---------- USERS (original auth) ----------
 
-class UserCreate(BaseModel):
+class UserRegister(BaseModel):
+    """Used for /auth/register endpoint"""
     name: str
     email: str
     password: str
@@ -19,16 +19,17 @@ class UserCreate(BaseModel):
 
 
 class UserOut(BaseModel):
+    """Returned by /auth/register and /users/{id}"""
     id: int
     name: str
     email: str
     phone: Optional[str] = None
 
     class Config:
-        from_attributes = True  # lets this read straight from a SQLAlchemy model
+        from_attributes = True
 
 
-# ---------- CONTACTS ----------
+# ---------- CONTACTS (original) ----------
 
 class ContactCreate(BaseModel):
     user_id: int
@@ -48,11 +49,11 @@ class ContactOut(BaseModel):
         from_attributes = True
 
 
-# ---------- CALLS ----------
+# ---------- CALLS (original) ----------
 
 class CallResult(BaseModel):
     user_id: int
-    verdict: str          # "safe" | "suspicious" | "scam"
+    verdict: str
     confidence: float
     caller_number: Optional[str] = None
 
@@ -69,7 +70,7 @@ class CallOut(BaseModel):
         from_attributes = True
 
 
-# ---------- NOTIFICATIONS ----------
+# ---------- NOTIFICATIONS (original) ----------
 
 class NotificationCreate(BaseModel):
     user_id: int
@@ -89,7 +90,7 @@ class NotificationOut(BaseModel):
         from_attributes = True
 
 
-# ---------- SETTINGS ----------
+# ---------- SETTINGS (original) ----------
 
 class SettingSet(BaseModel):
     user_id: int
@@ -102,6 +103,91 @@ class SettingOut(BaseModel):
     user_id: int
     key: str
     value: str
+
+    class Config:
+        from_attributes = True
+
+
+# ── Digital Bodyguard schemas ─────────────────────────────────────────────────
+
+class CallLogCreate(BaseModel):
+    user_id:       int = 1
+    timestamp:     str
+    risk_score:    int
+    color:         str
+    deepfake_prob: float
+    scam_prob:     float
+    transcript:    Optional[str] = None
+    alert_sent:    bool = False
+    chunk_num:     int = 0
+
+
+class CallLogResponse(BaseModel):
+    log_id:        int
+    user_id:       int
+    timestamp:     str
+    risk_score:    int
+    color:         str
+    deepfake_prob: float
+    scam_prob:     float
+    transcript:    Optional[str]
+    alert_sent:    bool
+    chunk_num:     int
+
+    class Config:
+        from_attributes = True
+
+
+class AnalysisResult(BaseModel):
+    """Exactly matches what analyze_audio_file() returns from Sarah's pipeline"""
+    score:              int
+    color:              str
+    deepfake_prob:      float
+    scam_language_prob: float
+    transcript:         Optional[str] = None
+    alert_family:       bool
+    chunk_num:          Optional[int] = 0
+
+
+class StatsResponse(BaseModel):
+    total_chunks_analyzed: int
+    red_alerts:            int
+    yellow_warnings:       int
+    safe_chunks:           int
+    family_alerts_sent:    int
+    average_risk_score:    float
+
+
+class UserCreate(BaseModel):
+    """Used for Digital Bodyguard /users endpoint"""
+    name:         str
+    phone_number: str
+    app_language: str = "English"
+
+
+class UserResponse(BaseModel):
+    user_id:            int
+    name:               str
+    phone_number:       str
+    monitoring_enabled: bool
+
+    class Config:
+        from_attributes = True
+
+
+class EmergencyContactCreate(BaseModel):
+    user_id:      int
+    name:         str
+    phone_number: str
+    relationship: Optional[str] = None
+
+
+class EmergencyContactResponse(BaseModel):
+    contact_id:   int
+    user_id:      int
+    name:         str
+    phone_number: str
+    relationship: Optional[str]
 
     class Config:
         from_attributes = True
