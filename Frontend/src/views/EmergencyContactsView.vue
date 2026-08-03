@@ -1,7 +1,6 @@
-<!-- DAY 7 -->
 <template>
   <div class="page">
-    <div class="topbar"><h2>Emergency Contacts</h2><span style="width:36px;"></span></div>
+    <div class="topbar"><h2>{{ t('contacts.title') }}</h2><span style="width:36px;"></span></div>
     <div class="content">
       <div class="card" v-for="c in contacts" :key="c.id" style="margin-bottom:10px;">
         <div class="row">
@@ -29,18 +28,18 @@
       </div>
 
       <div class="card" v-if="showAdd">
-        <input class="field" v-model="form.name" placeholder="Contact name" />
+        <input class="field" v-model="form.name" :placeholder="t('contacts.namePlaceholder')" />
 
-        <input class="field" v-model="form.phone" placeholder="Phone number (10 digits)" :style="phoneError ? 'border-color:var(--red);' : ''" />
+        <input class="field" v-model="form.phone" :placeholder="t('contacts.phonePlaceholder')" :style="phoneError ? 'border-color:var(--red);' : ''" />
         <div v-if="phoneError" style="color:var(--red); font-size:12px; margin:-6px 0 12px;">{{ phoneError }}</div>
 
-        <input class="field" v-model="form.relation" placeholder="Relation (e.g. Daughter)" />
+        <input class="field" v-model="form.relation" :placeholder="t('contacts.relationPlaceholder')" />
         <div v-if="nameError" style="color:var(--red); font-size:12px; margin:-6px 0 12px;">{{ nameError }}</div>
 
-        <button class="btn btn-primary" @click="saveContact">{{ editingId ? 'Update Contact' : 'Save Contact' }}</button>
+        <button class="btn btn-primary" @click="saveContact">{{ editingId ? t('contacts.updateContact') : t('contacts.saveContact') }}</button>
       </div>
 
-      <button class="btn btn-gold" @click="toggleAdd">{{ showAdd ? 'Cancel' : '+ Add Contact' }}</button>
+      <button class="btn btn-gold" @click="toggleAdd">{{ showAdd ? t('contacts.cancel') : t('contacts.addContact') }}</button>
     </div>
     <AppShell active="contacts" />
   </div>
@@ -49,6 +48,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
+import { t } from '../i18n'
 
 const STORAGE_KEY = 'digitalBodyguard.contacts'
 

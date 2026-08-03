@@ -39,7 +39,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { t } from '../i18n'
+import { t, setLocale } from '../i18n'
 
 const router = useRouter()
 const email = ref('')
@@ -78,6 +78,11 @@ function handleLogin() {
   }
 
   localStorage.setItem('digitalBodyguard.loggedIn', '1')
+
+  if (account.language) {
+    setLocale(account.language)
+  }
+
   router.push('/dashboard')
 }
 </script>

@@ -56,7 +56,46 @@ const dictionaries = {
     },
     history: {
       title: 'Call History',
-      all: 'All', safe: 'Safe', suspicious: 'Suspicious', scam: 'Scam'
+      all: 'All', safe: 'Safe', suspicious: 'Suspicious', scam: 'Scam',
+      noCallsYet: "No calls yet. Once Digital Bodyguard analyzes a call, it'll show up here."
+    },
+    notifications: {
+      title: 'Notifications',
+      scamAlerts: 'Scam Alerts',
+      familyNotifications: 'Family Notifications',
+      securityUpdates: 'Security Updates',
+      noScamAlerts: 'No scam alerts yet.',
+      noFamilyAlerts: 'No family alerts sent yet.',
+      scamDetected: 'Scam call detected',
+      alertSentTo: 'Alert sent to',
+      delivered: 'Delivered',
+      modelUpdated: 'Detection model updated',
+      newPatterns: 'New scam-phrase patterns added',
+      yesterday: 'Yesterday'
+    },
+    contacts: {
+      title: 'Emergency Contacts',
+      addContact: '+ Add Contact',
+      cancel: 'Cancel',
+      namePlaceholder: 'Contact name',
+      phonePlaceholder: 'Phone number (10 digits)',
+      relationPlaceholder: 'Relation (e.g. Daughter)',
+      saveContact: 'Save Contact',
+      updateContact: 'Update Contact'
+    },
+    profile: {
+      title: 'Profile',
+      memberSince: 'Member since Jan 2026',
+      userDetails: 'User Details',
+      phone: 'Phone',
+      email: 'Email',
+      emergencyContacts: 'Emergency Contacts',
+      contactSaved: 'contact saved',
+      contactsSaved: 'contacts saved',
+      accountInformation: 'Account Information',
+      plan: 'Plan',
+      protectedLabel: 'Protected',
+      saveChanges: 'Save Changes'
     }
   },
   hi: {
@@ -110,7 +149,46 @@ const dictionaries = {
     },
     history: {
       title: 'कॉल इतिहास',
-      all: 'सभी', safe: 'सुरक्षित', suspicious: 'संदिग्ध', scam: 'धोखाधड़ी'
+      all: 'सभी', safe: 'सुरक्षित', suspicious: 'संदिग्ध', scam: 'धोखाधड़ी',
+      noCallsYet: 'अभी तक कोई कॉल नहीं। जब Digital Bodyguard किसी कॉल का विश्लेषण करेगा, वह यहां दिखाई देगा।'
+    },
+    notifications: {
+      title: 'सूचनाएं',
+      scamAlerts: 'धोखाधड़ी अलर्ट',
+      familyNotifications: 'परिवार सूचनाएं',
+      securityUpdates: 'सुरक्षा अपडेट',
+      noScamAlerts: 'अभी तक कोई धोखाधड़ी अलर्ट नहीं।',
+      noFamilyAlerts: 'अभी तक कोई परिवार अलर्ट नहीं भेजा गया।',
+      scamDetected: 'धोखाधड़ी कॉल का पता चला',
+      alertSentTo: 'अलर्ट भेजा गया',
+      delivered: 'पहुंचा दिया गया',
+      modelUpdated: 'डिटेक्शन मॉडल अपडेट हुआ',
+      newPatterns: 'नए धोखाधड़ी-वाक्यांश पैटर्न जोड़े गए',
+      yesterday: 'कल'
+    },
+    contacts: {
+      title: 'आपातकालीन संपर्क',
+      addContact: '+ संपर्क जोड़ें',
+      cancel: 'रद्द करें',
+      namePlaceholder: 'संपर्क का नाम',
+      phonePlaceholder: 'फ़ोन नंबर (10 अंक)',
+      relationPlaceholder: 'रिश्ता (जैसे बेटी)',
+      saveContact: 'संपर्क सहेजें',
+      updateContact: 'संपर्क अपडेट करें'
+    },
+    profile: {
+      title: 'प्रोफ़ाइल',
+      memberSince: 'जनवरी 2026 से सदस्य',
+      userDetails: 'उपयोगकर्ता विवरण',
+      phone: 'फ़ोन',
+      email: 'ईमेल',
+      emergencyContacts: 'आपातकालीन संपर्क',
+      contactSaved: 'संपर्क सहेजा गया',
+      contactsSaved: 'संपर्क सहेजे गए',
+      accountInformation: 'खाता जानकारी',
+      plan: 'योजना',
+      protectedLabel: 'सुरक्षित',
+      saveChanges: 'बदलाव सहेजें'
     }
   },
   kok: {
@@ -164,7 +242,46 @@ const dictionaries = {
     },
     history: {
       title: 'कॉल इतिहास',
-      all: 'सगळें', safe: 'सुरक्षीत', suspicious: 'संशयास्पद', scam: 'फसवणूक'
+      all: 'सगळें', safe: 'सुरक्षीत', suspicious: 'संशयास्पद', scam: 'फसवणूक',
+      noCallsYet: 'अजून कॉल ना. Digital Bodyguard एका कॉलाचें विश्लेषण करता तेन्ना, तो हांगा दाखयतलो.'
+    },
+    notifications: {
+      title: 'सुचोवण्यो',
+      scamAlerts: 'फसवणूक सतर्कता',
+      familyNotifications: 'कुटुंब सुचोवण्यो',
+      securityUpdates: 'सुरक्षा अद्ययावत',
+      noScamAlerts: 'अजून फसवणूक सतर्कता ना.',
+      noFamilyAlerts: 'अजून कुटुंब सतर्कता धाडूंक ना.',
+      scamDetected: 'फसवणूक कॉल सापडलो',
+      alertSentTo: 'सतर्कता धाडली',
+      delivered: 'पावली',
+      modelUpdated: 'डिटेक्शन मॉडेल अद्ययावत जालें',
+      newPatterns: 'नवे फसवणूक-वाक्य नमुने जोडले',
+      yesterday: 'काल'
+    },
+    contacts: {
+      title: 'आणीबाणी संपर्क',
+      addContact: '+ संपर्क जोडात',
+      cancel: 'रद्द करात',
+      namePlaceholder: 'संपर्काचें नांव',
+      phonePlaceholder: 'फोन नंबर (10 अंक)',
+      relationPlaceholder: 'नातें (उदा. धूव)',
+      saveContact: 'संपर्क जतन करात',
+      updateContact: 'संपर्क अद्ययावत करात'
+    },
+    profile: {
+      title: 'प्रोफायल',
+      memberSince: 'जानेवारी 2026 सावन सदस्य',
+      userDetails: 'वापरप्याची म्हायती',
+      phone: 'फोन',
+      email: 'ईमेल',
+      emergencyContacts: 'आणीबाणी संपर्क',
+      contactSaved: 'संपर्क जतन जालो',
+      contactsSaved: 'संपर्क जतन जाले',
+      accountInformation: 'खात्याची म्हायती',
+      plan: 'येवजण',
+      protectedLabel: 'सुरक्षीत',
+      saveChanges: 'बदल जतन करात'
     }
   },
   ml: {
@@ -210,7 +327,7 @@ const dictionaries = {
       title: 'ക്രമീകരണങ്ങൾ',
       darkMode: 'ഡാർക്ക് മോഡ്',
       language: 'ഭാഷ',
-      accessibility: 'ഉപയോഗസൗകര്യം',
+      accessibility: 'പ്രവേശനക്ഷമത (വലിയ ടെക്സ്റ്റ്)',
       notifications: 'അറിയിപ്പ് ക്രമീകരണങ്ങൾ',
       privacy: 'സ്വകാര്യതാ ക്രമീകരണങ്ങൾ',
       about: 'ഈ ആപ്പിനെക്കുറിച്ച്',
@@ -218,7 +335,46 @@ const dictionaries = {
     },
     history: {
       title: 'കോൾ ചരിത്രം',
-      all: 'എല്ലാം', safe: 'സുരക്ഷിതം', suspicious: 'സംശയാസ്‌പദം', scam: 'തട്ടിപ്പ്'
+      all: 'എല്ലാം', safe: 'സുരക്ഷിതം', suspicious: 'സംശയാസ്‌പദം', scam: 'തട്ടിപ്പ്',
+      noCallsYet: 'ഇതുവരെ കോളുകൾ ഇല്ല. Digital Bodyguard ഒരു കോൾ വിശകലനം ചെയ്യുമ്പോൾ, അത് ഇവിടെ കാണിക്കും.'
+    },
+    notifications: {
+      title: 'അറിയിപ്പുകൾ',
+      scamAlerts: 'തട്ടിപ്പ് അലേർട്ടുകൾ',
+      familyNotifications: 'കുടുംബ അറിയിപ്പുകൾ',
+      securityUpdates: 'സുരക്ഷാ അപ്‌ഡേറ്റുകൾ',
+      noScamAlerts: 'ഇതുവരെ തട്ടിപ്പ് അലേർട്ടുകൾ ഇല്ല.',
+      noFamilyAlerts: 'ഇതുവരെ കുടുംബ അലേർട്ടുകൾ അയച്ചിട്ടില്ല.',
+      scamDetected: 'തട്ടിപ്പ് കോൾ കണ്ടെത്തി',
+      alertSentTo: 'അലേർട്ട് അയച്ചു',
+      delivered: 'എത്തിച്ചു',
+      modelUpdated: 'ഡിറ്റക്ഷൻ മോഡൽ അപ്‌ഡേറ്റ് ചെയ്തു',
+      newPatterns: 'പുതിയ തട്ടിപ്പ്-വാക്യ പാറ്റേണുകൾ ചേർത്തു',
+      yesterday: 'ഇന്നലെ'
+    },
+    contacts: {
+      title: 'അടിയന്തര ബന്ധങ്ങൾ',
+      addContact: '+ ബന്ധം ചേർക്കുക',
+      cancel: 'റദ്ദാക്കുക',
+      namePlaceholder: 'ബന്ധത്തിന്റെ പേര്',
+      phonePlaceholder: 'ഫോൺ നമ്പർ (10 അക്കങ്ങൾ)',
+      relationPlaceholder: 'ബന്ധം (ഉദാ. മകൾ)',
+      saveContact: 'ബന്ധം സേവ് ചെയ്യുക',
+      updateContact: 'ബന്ധം അപ്‌ഡേറ്റ് ചെയ്യുക'
+    },
+    profile: {
+      title: 'പ്രൊഫൈൽ',
+      memberSince: 'ജനുവരി 2026 മുതൽ അംഗം',
+      userDetails: 'ഉപയോക്തൃ വിവരങ്ങൾ',
+      phone: 'ഫോൺ',
+      email: 'ഇമെയിൽ',
+      emergencyContacts: 'അടിയന്തര ബന്ധങ്ങൾ',
+      contactSaved: 'ബന്ധം സേവ് ചെയ്തു',
+      contactsSaved: 'ബന്ധങ്ങൾ സേവ് ചെയ്തു',
+      accountInformation: 'അക്കൗണ്ട് വിവരം',
+      plan: 'പ്ലാൻ',
+      protectedLabel: 'സംരക്ഷിതം',
+      saveChanges: 'മാറ്റങ്ങൾ സേവ് ചെയ്യുക'
     }
   }
 }

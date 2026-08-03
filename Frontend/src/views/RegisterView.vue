@@ -26,6 +26,14 @@
       <input class="field" type="password" v-model="form.password" placeholder="Create a password (min 6 characters)" :style="errors.password ? 'border-color:var(--red);' : ''" />
       <div v-if="errors.password" class="field-error">{{ errors.password }}</div>
 
+      <label class="label">{{ t('settings.language') }}</label>
+      <select v-model="form.language" class="field">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="kok">कोंकणी (Konkani)</option>
+        <option value="ml">മലയാളം (Malayalam)</option>
+      </select>
+
       <div class="divider"></div>
 
       <label class="label">{{ t('register.contactLabel') }}</label>
@@ -43,13 +51,21 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { t } from '../i18n'
+import { t, setLocale, locale } from '../i18n'
 
 const router = useRouter()
 
-const form = reactive({ name:'', phone:'', email:'', password:'', contactName:'', contactPhone:'' })
+const form = reactive({
+  name:'', phone:'', email:'', password:'', contactName:'', contactPhone:'',
+  language: locale.value
+})
+
+watch(() => form.language, (newLang) => {
+  setLocale(newLang)
+})
+
 const errors = reactive({ name:'', phone:'', email:'', password:'' })
 const formError = ref('')
 
@@ -83,11 +99,14 @@ function handleRegister() {
     email: form.email.trim().toLowerCase(),
     password: form.password,
     contactName: form.contactName,
-    contactPhone: form.contactPhone
+    contactPhone: form.contactPhone,
+    language: form.language
   }
 
   localStorage.setItem('digitalBodyguard.account', JSON.stringify(account))
   localStorage.setItem('digitalBodyguard.loggedIn', '1')
+
+  setLocale(account.language)
 
   router.push('/dashboard')
 }

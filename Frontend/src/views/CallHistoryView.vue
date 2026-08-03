@@ -17,7 +17,7 @@
       </router-link>
 
       <div v-if="calls.length === 0" class="card" style="text-align:center;">
-        <p class="muted" style="margin:0;">No calls yet. Once Digital Bodyguard analyzes a call, it'll show up here.</p>
+        <p class="muted" style="margin:0;">{{ t('history.noCallsYet') }}</p>
       </div>
     </div>
     <AppShell active="history" />

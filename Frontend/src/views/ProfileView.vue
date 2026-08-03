@@ -1,15 +1,15 @@
 <template>
   <div class="page">
-    <div class="topbar"><h2>Profile</h2><router-link to="/settings" class="back">⚙️</router-link></div>
+    <div class="topbar"><h2>{{ t('profile.title') }}</h2><router-link to="/settings" class="back">⚙️</router-link></div>
     <div class="content">
       <div style="text-align:center; margin-bottom:20px;">
         <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#8A93A8,#4A5A73); margin:0 auto 10px; display:flex;align-items:center;justify-content:center; color:#fff; font-size:26px; font-weight:700;">{{ initial }}</div>
         <div style="font-weight:800; font-size:17px;">{{ fullName }}</div>
-        <div class="muted">Member since Jan 2026</div>
+        <div class="muted">{{ t('profile.memberSince') }}</div>
       </div>
 
       <div class="row" style="margin-bottom:6px;">
-        <div class="label" style="margin:0;">User Details</div>
+        <div class="label" style="margin:0;">{{ t('profile.userDetails') }}</div>
         <button class="icon-btn" @click="toggleEdit" aria-label="Edit user details">
           <svg v-if="!editing" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"/>
@@ -20,30 +20,30 @@
       </div>
 
       <div class="card" v-if="!editing">
-        <div class="row" style="margin-bottom:8px;"><span class="muted">Phone</span><span>{{ account.phone || '—' }}</span></div>
-        <div class="row"><span class="muted">Email</span><span>{{ account.email || '—' }}</span></div>
+        <div class="row" style="margin-bottom:8px;"><span class="muted">{{ t('profile.phone') }}</span><span>{{ account.phone || '—' }}</span></div>
+        <div class="row"><span class="muted">{{ t('profile.email') }}</span><span>{{ account.email || '—' }}</span></div>
       </div>
 
       <div class="card" v-else>
-        <label class="label">Phone</label>
+        <label class="label">{{ t('profile.phone') }}</label>
         <input class="field" v-model="form.phone" placeholder="+91 98xxx xxxxx" :style="phoneError ? 'border-color:var(--red);' : ''" />
         <div v-if="phoneError" style="color:var(--red); font-size:12px; margin:-6px 0 12px;">{{ phoneError }}</div>
 
-        <label class="label">Email</label>
+        <label class="label">{{ t('profile.email') }}</label>
         <input class="field" v-model="form.email" placeholder="name@email.com" :style="emailError ? 'border-color:var(--red);' : ''" />
         <div v-if="emailError" style="color:var(--red); font-size:12px; margin:-6px 0 12px;">{{ emailError }}</div>
 
-        <button class="btn btn-primary" style="margin-top:4px;" @click="saveDetails">Save Changes</button>
+        <button class="btn btn-primary" style="margin-top:4px;" @click="saveDetails">{{ t('profile.saveChanges') }}</button>
       </div>
 
-      <div class="label">Emergency Contacts</div>
+      <div class="label">{{ t('profile.emergencyContacts') }}</div>
       <div class="card row" style="cursor:pointer;" @click="$router.push('/contacts')">
-        <span>{{ contactsCount }} contact{{ contactsCount === 1 ? '' : 's' }} saved</span><span class="muted">›</span>
+        <span>{{ contactsCount }} {{ contactsCount === 1 ? t('profile.contactSaved') : t('profile.contactsSaved') }}</span><span class="muted">›</span>
       </div>
 
-      <div class="label">Account Information</div>
+      <div class="label">{{ t('profile.accountInformation') }}</div>
       <div class="card">
-        <div class="row"><span class="muted">Plan</span><span class="pill pill-green">Protected</span></div>
+        <div class="row"><span class="muted">{{ t('profile.plan') }}</span><span class="pill pill-green">{{ t('profile.protectedLabel') }}</span></div>
       </div>
     </div>
     <AppShell active="profile" />
@@ -53,6 +53,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
+import { t } from '../i18n'
 
 const ACCOUNT_KEY = 'digitalBodyguard.account'
 
