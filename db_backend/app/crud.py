@@ -1,22 +1,22 @@
 """
 CRUD = Create, Read, Update, Delete.
-This file has one small function per action. Your API routes (later) will
+This file has one small function per action. Your API routes will
 just call these functions instead of writing raw database code everywhere.
-
-You can test every function in this file directly, with no frontend,
-no API, nothing else needed. See test_db.py for examples.
 """
 from sqlalchemy.orm import Session
-from . import models
+from sqlalchemy import func
+from datetime import datetime
+from . import models, schemas
 
 
-# ---------- USERS ----------
+# ---------- USERS (original) ----------
 
-def create_user(db: Session, name: str, email: str, password_hash: str, phone: str = None):
+def create_user_by_email(db: Session, name: str, email: str, password_hash: str, phone: str = None):
+    """Original registration-based user creation (for auth/register endpoint)"""
     user = models.User(name=name, email=email, password_hash=password_hash, phone=phone)
     db.add(user)
     db.commit()
-    db.refresh(user)  # refreshes 'user' so it now has its generated id
+    db.refresh(user)
     return user
 
 
@@ -28,7 +28,7 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-# ---------- CONTACTS ----------
+# ---------- CONTACTS (original) ----------
 
 def add_contact(db: Session, user_id: int, name: str, phone: str, relation: str = None):
     contact = models.Contact(user_id=user_id, name=name, phone=phone, relation=relation)
@@ -50,10 +50,7 @@ def delete_contact(db: Session, contact_id: int):
     return contact
 
 
-# ---------- CALLS ----------
-# NOTE: save_call_result() is the ONE function your teammate's real-time/model
-# code will call once the ML model finishes analyzing a call. This is the
-# entire connection point between your database work and their real-time work.
+# ---------- CALLS (original) ----------
 
 def save_call_result(db: Session, user_id: int, verdict: str, confidence: float, caller_number: str = None):
     call = models.Call(
@@ -76,7 +73,7 @@ def get_call_by_id(db: Session, call_id: int):
     return db.query(models.Call).filter(models.Call.id == call_id).first()
 
 
-# ---------- NOTIFICATIONS ----------
+# ---------- NOTIFICATIONS (original) ----------
 
 def add_notification(db: Session, user_id: int, message: str, call_id: int = None):
     notif = models.Notification(user_id=user_id, message=message, call_id=call_id)
@@ -90,7 +87,7 @@ def get_notifications_for_user(db: Session, user_id: int):
     return db.query(models.Notification).filter(models.Notification.user_id == user_id).order_by(models.Notification.created_at.desc()).all()
 
 
-# ---------- SETTINGS ----------
+# ---------- SETTINGS (original) ----------
 
 def set_setting(db: Session, user_id: int, key: str, value: str):
     setting = db.query(models.Setting).filter(
@@ -108,3 +105,95 @@ def set_setting(db: Session, user_id: int, key: str, value: str):
 
 def get_settings_for_user(db: Session, user_id: int):
     return db.query(models.Setting).filter(models.Setting.user_id == user_id).all()
+
+
+# ── CallLog CRUD (Digital Bodyguard pipeline) ─────────────────────────────────
+
+def save_call_log(db: Session, result: dict) -> models.CallLog:
+    """
+    Saves one pipeline result to the database.
+    result = the dict returned by Sarah's analyze_audio_file()
+    """
+    log = models.CallLog(
+        user_id       = 1,
+        timestamp     = datetime.now().isoformat(),
+        risk_score    = result.get("score", 0),
+        color         = result.get("color", "GREEN"),
+        deepfake_prob = result.get("deepfake_prob", 0.0),
+        scam_prob     = result.get("scam_language_prob", 0.0),
+        transcript    = result.get("transcript", ""),
+        alert_sent    = result.get("alert_family", False),
+        chunk_num     = result.get("chunk_num", 0)
+    )
+    db.add(log)
+    db.commit()
+    db.refresh(log)
+    return log
+
+
+def get_all_logs(db: Session) -> list:
+    return db.query(models.CallLog).order_by(models.CallLog.log_id.desc()).all()
+
+
+def get_recent_logs(db: Session, limit: int = 10) -> list:
+    return db.query(models.CallLog).order_by(models.CallLog.log_id.desc()).limit(limit).all()
+
+
+def get_high_risk_logs(db: Session) -> list:
+    return db.query(models.CallLog).filter(models.CallLog.color == "RED").order_by(models.CallLog.log_id.desc()).all()
+
+
+def get_stats(db: Session) -> dict:
+    total     = db.query(func.count(models.CallLog.log_id)).scalar() or 0
+    red       = db.query(func.count(models.CallLog.log_id)).filter(models.CallLog.color == "RED").scalar() or 0
+    yellow    = db.query(func.count(models.CallLog.log_id)).filter(models.CallLog.color == "YELLOW").scalar() or 0
+    green     = db.query(func.count(models.CallLog.log_id)).filter(models.CallLog.color == "GREEN").scalar() or 0
+    alerts    = db.query(func.count(models.CallLog.log_id)).filter(models.CallLog.alert_sent == True).scalar() or 0
+    avg_score = db.query(func.avg(models.CallLog.risk_score)).scalar() or 0.0
+    return {
+        "total_chunks_analyzed": total,
+        "red_alerts":            red,
+        "yellow_warnings":       yellow,
+        "safe_chunks":           green,
+        "family_alerts_sent":    alerts,
+        "average_risk_score":    round(float(avg_score), 1)
+    }
+
+
+# ── User CRUD (Digital Bodyguard) ─────────────────────────────────────────────
+
+def create_user(db: Session, user: schemas.UserCreate) -> models.User:
+    db_user = models.User(
+        name           = user.name,
+        phone_number   = user.phone_number,
+        app_language   = user.app_language,
+        created_at     = datetime.now().isoformat()
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+def get_user(db: Session, user_id: int) -> models.User:
+    return db.query(models.User).filter(models.User.user_id == user_id).first()
+
+
+# ── EmergencyContact CRUD ─────────────────────────────────────────────────────
+
+def create_contact(db: Session, contact: schemas.ContactCreate) -> models.EmergencyContact:
+    db_contact = models.EmergencyContact(
+        user_id      = contact.user_id,
+        name         = contact.name,
+        phone_number = contact.phone_number,
+        relationship = contact.relationship,
+        added_at     = datetime.now().isoformat()
+    )
+    db.add(db_contact)
+    db.commit()
+    db.refresh(db_contact)
+    return db_contact
+
+
+def get_contacts_by_user(db: Session, user_id: int) -> list:
+    return db.query(models.EmergencyContact).filter(models.EmergencyContact.user_id == user_id).all()
