@@ -33,8 +33,8 @@ from src.models.scam_nlp import ScamNLPModel, keyword_score
 from src.risk_engine import assess_call_chunk
 
 # Paths to your trained models
-DEEPFAKE_MODEL_PATH = "models/deepfake_cnn.pth"
-SCAM_MODEL_PATH = "models/scam_distilbert"
+DEEPFAKE_MODEL_PATH = r"C:\Users\prave\OneDrive\Desktop\DigitalBodyguard\Nichex\backend\models\deepfake_cnn.pth"
+SCAM_MODEL_PATH = r"C:\Users\prave\OneDrive\Desktop\DigitalBodyguard\Nichex\backend\models\scam_distilbert"
 
 # Load once at module level so they're not reloaded on every call
 # (loading takes ~2-3 seconds; you don't want that per audio chunk)

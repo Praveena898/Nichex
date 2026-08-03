@@ -22,7 +22,7 @@ from .database import get_db, engine, Base
 Base.metadata.create_all(bind=engine)
 
 # Load Sarah's pipeline (models load once at startup)
-SARAH_BACKEND_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "backend")
+SARAH_BACKEND_PATH = r"C:\Users\prave\OneDrive\Desktop\DigitalBodyguard\Nichex\backend"
 sys.path.append(SARAH_BACKEND_PATH)
 
 try:

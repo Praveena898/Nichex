@@ -191,3 +191,6 @@ class EmergencyContactResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+# Alias so main.py can use either name
+ContactResponse = EmergencyContactResponse

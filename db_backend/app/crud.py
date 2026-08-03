@@ -183,11 +183,11 @@ def get_user(db: Session, user_id: int) -> models.User:
 
 def create_contact(db: Session, contact: schemas.ContactCreate) -> models.EmergencyContact:
     db_contact = models.EmergencyContact(
-        user_id      = contact.user_id,
-        name         = contact.name,
-        phone_number = contact.phone_number,
-        relationship = contact.relationship,
-        added_at     = datetime.now().isoformat()
+        user_id       = contact.user_id,
+        name          = contact.name,
+        phone_number  = contact.phone_number,
+        relation_type = contact.relationship,
+        added_at      = datetime.now().isoformat()
     )
     db.add(db_contact)
     db.commit()
