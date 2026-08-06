@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Digital Bodyguard</string>
+    <string name="title_activity_main">Digital Bodyguard</string>
+    <string name="package_name">com.nichex.digitalbodyguard</string>
+    <string name="custom_url_scheme">com.nichex.digitalbodyguard</string>
+</resources>

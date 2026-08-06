@@ -43,6 +43,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { addCall } from '../callLog'
+import { analyzeAudio } from '../services/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -85,19 +86,7 @@ onMounted(async () => {
     const blob      = new Blob(chunks, { type: 'audio/webm' })
     const audioFile = new File([blob], 'call_recording.webm', { type: 'audio/webm' })
 
-    const formData = new FormData()
-    formData.append('audio', audioFile)
-
-    const response = await fetch('http://localhost:5000/analyze', {
-      method: 'POST',
-      body: formData
-    })
-
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`)
-    }
-
-    const result = await response.json()
+    const result = await analyzeAudio(audioFile)
     progress.value = 90
 
     // ── Step 3: Update UI with real results ───────────────────────────────────
@@ -145,7 +134,7 @@ onMounted(async () => {
     if (err.name === 'NotAllowedError') {
       errorMsg.value = 'Microphone permission denied. Please allow mic access and try again.'
     } else {
-      errorMsg.value = `Analysis failed: ${err.message}. Make sure the backend server is running at localhost:5000.`
+      errorMsg.value = `Analysis failed: ${err.message}. Make sure the backend server is reachable.`
     }
     progress.value   = 0
     statusText.value = 'ERROR'

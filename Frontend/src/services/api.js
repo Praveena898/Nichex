@@ -1,21 +1,34 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000'
+    baseURL: 'http://127.0.0.1:5000'
 })
 
 // Send audio file → get risk result
 export async function analyzeAudio(audioFile, onProgress) {
   const formData = new FormData()
   formData.append('audio', audioFile)
-  const response = await api.post('/analyze', formData, {
-    onUploadProgress: (evt) => {
-      if (onProgress && evt.total) {
-        onProgress(Math.round((evt.loaded * 100) / evt.total))
+  const requestPath = '/analyze'
+  const requestUrl = `${api.defaults.baseURL}${requestPath}`
+  console.log('[analyzeAudio] Request URL:', requestUrl)
+
+  try {
+    const response = await api.post(requestPath, formData, {
+      onUploadProgress: (evt) => {
+        if (onProgress && evt.total) {
+          onProgress(Math.round((evt.loaded * 100) / evt.total))
+        }
       }
-    }
-  })
-  return response.data
+    })
+    return response.data
+  } catch (err) {
+    console.error('[analyzeAudio] Axios error.code:', err.code)
+    console.error('[analyzeAudio] Axios error.message:', err.message)
+    console.error('[analyzeAudio] Axios response:', err.response)
+    console.error('[analyzeAudio] Axios request URL:', err.config?.url)
+    console.error('[analyzeAudio] Axios toJSON:', err.toJSON?.())
+    throw err
+  }
 }
 
 // Get all call history from database
