@@ -178,6 +178,17 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
 def get_user(db: Session, user_id: int) -> models.User:
     return db.query(models.User).filter(models.User.user_id == user_id).first()
 
+def authenticate_user(db: Session, email: str, password: str):
+    user = get_user_by_email(db, email)
+
+    if not user:
+        return None
+
+    if user.password_hash != password:
+        return None
+
+    return user
+
 
 # ── EmergencyContact CRUD ─────────────────────────────────────────────────────
 

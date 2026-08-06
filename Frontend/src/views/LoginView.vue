@@ -47,6 +47,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, setLocale } from '../i18n'
+import { login } from '../services/api'
 
 const router = useRouter()
 const email = ref('')
@@ -67,31 +68,38 @@ function validate() {
   return !errors.email && !errors.password
 }
 
-function handleLogin() {
+async function handleLogin() {
   formError.value = ''
+
   if (!validate()) return
 
-  const saved = localStorage.getItem('digitalBodyguard.account')
-  if (!saved) {
-    formError.value = 'No account found. Please create an account first.'
-    return
+  try {
+    const user = await login({
+      email: email.value.trim().toLowerCase(),
+      password: password.value
+    })
+
+    localStorage.setItem(
+  'digitalBodyguard.account',
+  JSON.stringify({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone
+  })
+)
+
+    // Save only session info
+    localStorage.setItem('digitalBodyguard.loggedIn', '1')
+    localStorage.setItem('digitalBodyguard.userId', user.id)
+
+    router.push('/dashboard')
+
+  } catch (err) {
+    formError.value =
+      err.response?.data?.detail ||
+      'Incorrect email or password.'
   }
-
-  const account = JSON.parse(saved)
-  const enteredEmail = email.value.trim().toLowerCase()
-
-  if (enteredEmail !== account.email || password.value !== account.password) {
-    formError.value = 'Incorrect email or password. Please try again.'
-    return
-  }
-
-  localStorage.setItem('digitalBodyguard.loggedIn', '1')
-
-  if (account.language) {
-    setLocale(account.language)
-  }
-
-  router.push('/dashboard')
 }
 </script>
 

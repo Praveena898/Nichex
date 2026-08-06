@@ -54,6 +54,7 @@
 import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { t, setLocale, locale } from '../i18n'
+import { register } from '../services/api'
 
 const router = useRouter()
 
@@ -89,26 +90,44 @@ function validate() {
   return !errors.name && !errors.phone && !errors.email && !errors.password
 }
 
-function handleRegister() {
+async function handleRegister() {
   formError.value = ''
+
   if (!validate()) return
 
-  const account = {
-    name: form.name,
-    phone: form.phone,
-    email: form.email.trim().toLowerCase(),
-    password: form.password,
-    contactName: form.contactName,
-    contactPhone: form.contactPhone,
-    language: form.language
+  try {
+
+    const user = await register({
+      name: form.name,
+      email: form.email.trim().toLowerCase(),
+      password: form.password,
+      phone: form.phone
+    })
+
+    localStorage.setItem(
+  'digitalBodyguard.account',
+  JSON.stringify({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone
+  })
+)
+
+    localStorage.setItem('digitalBodyguard.loggedIn', '1')
+    localStorage.setItem('digitalBodyguard.userId', user.id)
+
+    setLocale(form.language)
+
+    router.push('/dashboard')
+
+  } catch (err) {
+
+    formError.value =
+      err.response?.data?.detail ||
+      'Registration failed.'
+
   }
-
-  localStorage.setItem('digitalBodyguard.account', JSON.stringify(account))
-  localStorage.setItem('digitalBodyguard.loggedIn', '1')
-
-  setLocale(account.language)
-
-  router.push('/dashboard')
 }
 </script>
 

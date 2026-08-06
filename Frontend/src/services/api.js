@@ -54,3 +54,15 @@ export async function checkHealth() {
   const response = await api.get('/health')
   return response.data
 }
+
+// Register user
+export async function register(userData) {
+  const response = await api.post('/auth/register', userData)
+  return response.data
+}
+
+// Login user
+export async function login(credentials) {
+  const response = await api.post('/auth/login', credentials)
+  return response.data
+}

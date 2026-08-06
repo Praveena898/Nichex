@@ -17,6 +17,10 @@ class UserRegister(BaseModel):
     password: str
     phone: Optional[str] = None
 
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 
 class UserOut(BaseModel):
     """Returned by /auth/register and /users/{id}"""
