@@ -1,11 +1,7 @@
 <template>
   <div class="page">
     <div class="topbar">
-      <button class="back-arrow" @click="$router.back()" aria-label="Go back">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
+      <span style="width:36px;"></span>
       <h2>{{ t('login.title') }}</h2>
       <span style="width:36px;"></span>
     </div>
@@ -18,7 +14,18 @@
       <div v-if="errors.email" class="field-error">{{ errors.email }}</div>
 
       <label class="label">{{ t('login.passwordLabel') }}</label>
-      <input class="field" type="password" v-model="password" placeholder="••••••••" :style="errors.password ? 'border-color:var(--red);' : ''" />
+      <div class="password-wrap">
+        <input class="field" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="••••••••" :style="errors.password ? 'border-color:var(--red);' : ''" />
+        <button type="button" class="eye-btn" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+          <svg v-if="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+            <path d="M1 1l22 22"/>
+          </svg>
+        </button>
+      </div>
       <div v-if="errors.password" class="field-error">{{ errors.password }}</div>
 
       <div class="row" style="margin-bottom:20px;">
@@ -44,6 +51,7 @@ import { t, setLocale } from '../i18n'
 const router = useRouter()
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const errors = reactive({ email: '', password: '' })
 const formError = ref('')
 
@@ -88,21 +96,28 @@ function handleLogin() {
 </script>
 
 <style scoped>
-.back-arrow {
-  background: none;
-  border: none;
-  color: var(--navy);
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-.back-arrow:hover { opacity: 0.6; }
 .field-error {
   color: var(--red);
   font-size: 12px;
   margin: -6px 0 12px;
 }
+.password-wrap {
+  position: relative;
+}
+.password-wrap .field {
+  padding-right: 42px;
+}
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.eye-btn:hover { color: var(--navy); }
 </style>

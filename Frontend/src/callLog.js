@@ -1,7 +1,3 @@
-// Shared call-history store, scoped per logged-in account.
-// Each account (identified by email) gets its own call log in localStorage,
-// so logging in as a different person shows a different history.
-
 function getCurrentUserKey() {
   const saved = localStorage.getItem('digitalBodyguard.account')
   if (saved) {
