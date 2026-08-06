@@ -1,13 +1,9 @@
-// Lightweight global language store — no extra npm packages needed.
-// Any component can `import { t, locale, setLocale } from '../i18n'`
-// and call t('some.key') inside its <template>.
-
 import { ref } from 'vue'
 
 const dictionaries = {
   en: {
     nav: { home: 'Home', history: 'History', alerts: 'Alerts', contacts: 'Family', profile: 'Profile' },
-    common: { applyChanges: 'Apply Changes', applied: 'Applied ✓', cancel: 'Cancel', continueText: 'Continue' },
+    common: { applyChanges: 'Apply Changes', applied: 'Applied', cancel: 'Cancel', continueText: 'Continue' },
     splash: { name: 'Digital Bodyguard', tagline: 'Protecting every call, every day' },
     onboarding: { getStarted: 'Get Started', haveAccount: 'I already have an account', next: 'Next' },
     login: {
@@ -42,7 +38,9 @@ const dictionaries = {
       quickActions: 'Quick Actions',
       callHistory: 'Call History',
       contacts: 'Contacts',
-      emergency: 'Emergency — Alert My Family'
+      emergency: 'Emergency - Alert My Family',
+      loadError: "Couldn't load your data. Pull to refresh or try again later.",
+      noCallsAnalyzed: 'No calls analyzed yet.'
     },
     settings: {
       title: 'Settings',
@@ -75,7 +73,7 @@ const dictionaries = {
     },
     contacts: {
       title: 'Emergency Contacts',
-      addContact: '+ Add Contact',
+      addContact: 'Add Contact',
       cancel: 'Cancel',
       namePlaceholder: 'Contact name',
       phonePlaceholder: 'Phone number (10 digits)',
@@ -96,11 +94,21 @@ const dictionaries = {
       plan: 'Plan',
       protectedLabel: 'Protected',
       saveChanges: 'Save Changes'
+    },
+    about: {
+      title: 'About',
+      version: 'Version 1.0.0',
+      description: 'A real-time voice and message trust-verifier built to protect elderly users from deepfake and scam phone calls.',
+      teamMembers: 'Team Members',
+      frontend: 'Frontend',
+      securityBackend: 'Security & Backend',
+      you: 'You',
+      teammate: 'Teammate'
     }
   },
   hi: {
     nav: { home: 'होम', history: 'इतिहास', alerts: 'अलर्ट', contacts: 'परिवार', profile: 'प्रोफ़ाइल' },
-    common: { applyChanges: 'लागू करें', applied: 'लागू हो गया ✓', cancel: 'रद्द करें', continueText: 'जारी रखें' },
+    common: { applyChanges: 'लागू करें', applied: 'लागू हो गया', cancel: 'रद्द करें', continueText: 'जारी रखें' },
     splash: { name: 'डिजिटल बॉडीगार्ड', tagline: 'हर कॉल की सुरक्षा, हर दिन' },
     onboarding: { getStarted: 'शुरू करें', haveAccount: 'मेरे पास पहले से खाता है', next: 'आगे' },
     login: {
@@ -135,7 +143,9 @@ const dictionaries = {
       quickActions: 'त्वरित कार्रवाई',
       callHistory: 'कॉल इतिहास',
       contacts: 'संपर्क',
-      emergency: 'आपातकाल — परिवार को सूचित करें'
+      emergency: 'आपातकाल - परिवार को सूचित करें',
+      loadError: 'आपका डेटा लोड नहीं हो सका। रीफ़्रेश करें या बाद में पुनः प्रयास करें।',
+      noCallsAnalyzed: 'अभी तक कोई कॉल विश्लेषित नहीं हुई।'
     },
     settings: {
       title: 'सेटिंग्स',
@@ -168,7 +178,7 @@ const dictionaries = {
     },
     contacts: {
       title: 'आपातकालीन संपर्क',
-      addContact: '+ संपर्क जोड़ें',
+      addContact: 'संपर्क जोड़ें',
       cancel: 'रद्द करें',
       namePlaceholder: 'संपर्क का नाम',
       phonePlaceholder: 'फ़ोन नंबर (10 अंक)',
@@ -189,11 +199,21 @@ const dictionaries = {
       plan: 'योजना',
       protectedLabel: 'सुरक्षित',
       saveChanges: 'बदलाव सहेजें'
+    },
+    about: {
+      title: 'ऐप के बारे में',
+      version: 'संस्करण 1.0.0',
+      description: 'बुज़ुर्ग उपयोगकर्ताओं को डीपफेक और धोखाधड़ी वाली फ़ोन कॉल्स से बचाने के लिए बनाया गया एक रीयल-टाइम आवाज़ और संदेश विश्वास-सत्यापक।',
+      teamMembers: 'टीम सदस्य',
+      frontend: 'फ्रंटएंड',
+      securityBackend: 'सुरक्षा और बैकएंड',
+      you: 'आप',
+      teammate: 'टीममेट'
     }
   },
   kok: {
     nav: { home: 'घर', history: 'इतिहास', alerts: 'सतर्कता', contacts: 'कुटुंब', profile: 'प्रोफायल' },
-    common: { applyChanges: 'बदल लागू करात', applied: 'लागू जाला ✓', cancel: 'रद्द करात', continueText: 'फुडें वचात' },
+    common: { applyChanges: 'बदल लागू करात', applied: 'लागू जाला', cancel: 'रद्द करात', continueText: 'फुडें वचात' },
     splash: { name: 'डिजिटल बॉडीगार्ड', tagline: 'दर एका कॉलाची सुरक्षा, दर दिस' },
     onboarding: { getStarted: 'सुरू करात', haveAccount: 'म्हज्याकडे पयलीच खातें आसा', next: 'फुडें' },
     login: {
@@ -228,7 +248,9 @@ const dictionaries = {
       quickActions: 'त्वरीत कारवाय',
       callHistory: 'कॉल इतिहास',
       contacts: 'संपर्क',
-      emergency: 'आणीबाणी — कुटुंबाक कळयात'
+      emergency: 'आणीबाणी - कुटुंबाक कळयात',
+      loadError: 'तुमचो डेटा लोड जावंक ना. रिफ्रेश करात वा फुडें परत यत्न करात.',
+      noCallsAnalyzed: 'अजून कसलीच कॉल विश्लेषण जावंक ना.'
     },
     settings: {
       title: 'सेटिंग्स',
@@ -261,7 +283,7 @@ const dictionaries = {
     },
     contacts: {
       title: 'आणीबाणी संपर्क',
-      addContact: '+ संपर्क जोडात',
+      addContact: 'संपर्क जोडात',
       cancel: 'रद्द करात',
       namePlaceholder: 'संपर्काचें नांव',
       phonePlaceholder: 'फोन नंबर (10 अंक)',
@@ -282,11 +304,21 @@ const dictionaries = {
       plan: 'येवजण',
       protectedLabel: 'सुरक्षीत',
       saveChanges: 'बदल जतन करात'
+    },
+    about: {
+      title: 'ह्या ऍपाविशीं',
+      version: 'आवृत्ती 1.0.0',
+      description: 'वृद्ध वापरप्यांक डीपफेक आनी फसवणूक कॉल्स सावन राखूंक तयार केल्लो रीयल-टायम आवाज आनी संदेश विश्वास-तपासणी.',
+      teamMembers: 'गट सदस्य',
+      frontend: 'फ्रंटएंड',
+      securityBackend: 'सुरक्षा आनी बॅकएंड',
+      you: 'तुमी',
+      teammate: 'गट सांगाती'
     }
   },
   ml: {
     nav: { home: 'ഹോം', history: 'ചരിത്രം', alerts: 'അലേർട്ടുകൾ', contacts: 'കുടുംബം', profile: 'പ്രൊഫൈൽ' },
-    common: { applyChanges: 'മാറ്റങ്ങൾ പ്രയോഗിക്കുക', applied: 'പ്രയോഗിച്ചു ✓', cancel: 'റദ്ദാക്കുക', continueText: 'തുടരുക' },
+    common: { applyChanges: 'മാറ്റങ്ങൾ പ്രയോഗിക്കുക', applied: 'പ്രയോഗിച്ചു', cancel: 'റദ്ദാക്കുക', continueText: 'തുടരുക' },
     splash: { name: 'ഡിജിറ്റൽ ബോഡിഗാർഡ്', tagline: 'ഓരോ കോളും, ഓരോ ദിവസവും സംരക്ഷിക്കുന്നു' },
     onboarding: { getStarted: 'ആരംഭിക്കുക', haveAccount: 'എനിക്ക് ഇതിനകം ഒരു അക്കൗണ്ട് ഉണ്ട്', next: 'അടുത്തത്' },
     login: {
@@ -321,7 +353,9 @@ const dictionaries = {
       quickActions: 'ദ്രുത പ്രവർത്തനങ്ങൾ',
       callHistory: 'കോൾ ചരിത്രം',
       contacts: 'ബന്ധങ്ങൾ',
-      emergency: 'അടിയന്തരാവസ്ഥ — എന്റെ കുടുംബത്തെ അറിയിക്കുക'
+      emergency: 'അടിയന്തരാവസ്ഥ - എന്റെ കുടുംബത്തെ അറിയിക്കുക',
+      loadError: 'നിങ്ങളുടെ ഡാറ്റ ലോഡ് ചെയ്യാനായില്ല. റിഫ്രഷ് ചെയ്യുക അല്ലെങ്കിൽ പിന്നീട് ശ്രമിക്കുക.',
+      noCallsAnalyzed: 'ഇതുവരെ കോളുകൾ വിശകലനം ചെയ്തിട്ടില്ല.'
     },
     settings: {
       title: 'ക്രമീകരണങ്ങൾ',
@@ -354,7 +388,7 @@ const dictionaries = {
     },
     contacts: {
       title: 'അടിയന്തര ബന്ധങ്ങൾ',
-      addContact: '+ ബന്ധം ചേർക്കുക',
+      addContact: 'ബന്ധം ചേർക്കുക',
       cancel: 'റദ്ദാക്കുക',
       namePlaceholder: 'ബന്ധത്തിന്റെ പേര്',
       phonePlaceholder: 'ഫോൺ നമ്പർ (10 അക്കങ്ങൾ)',
@@ -375,6 +409,16 @@ const dictionaries = {
       plan: 'പ്ലാൻ',
       protectedLabel: 'സംരക്ഷിതം',
       saveChanges: 'മാറ്റങ്ങൾ സേവ് ചെയ്യുക'
+    },
+    about: {
+      title: 'ഈ ആപ്പിനെക്കുറിച്ച്',
+      version: 'പതിപ്പ് 1.0.0',
+      description: 'വൃദ്ധരായ ഉപയോക്താക്കളെ ഡീപ്ഫേക്കിൽ നിന്നും തട്ടിപ്പ് ഫോൺ കോളുകളിൽ നിന്നും സംരക്ഷിക്കാൻ നിർമ്മിച്ച തത്സമയ ശബ്ദ, സന്ദേശ വിശ്വാസ്യത പരിശോധന.',
+      teamMembers: 'ടീം അംഗങ്ങൾ',
+      frontend: 'ഫ്രണ്ട്എൻഡ്',
+      securityBackend: 'സുരക്ഷയും ബാക്ക്എൻഡും',
+      you: 'നിങ്ങൾ',
+      teammate: 'ടീമംഗം'
     }
   }
 }
