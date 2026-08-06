@@ -143,8 +143,10 @@ class AnalysisResult(BaseModel):
     score:              int
     color:              str
     deepfake_prob:      float
+    deepfake_prob_raw:  Optional[float] = None
     scam_language_prob: float
     transcript:         Optional[str] = None
+    transcript_confidence: Optional[float] = None
     alert_family:       bool
     chunk_num:          Optional[int] = 0
 

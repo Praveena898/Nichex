@@ -26,8 +26,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from src.models.deepfake_cnn import DeepfakeCNN
 
 # ---------------- Config ----------------
-MFCC_PATH = "data/mfcc_output/mfcc_features.npy"
-LABELS_PATH = "data/mfcc_output/labels.npy"
+MFCC_PATH = os.environ.get("MFCC_PATH", "data/mfcc_output/mfcc_features.npy")
+LABELS_PATH = os.environ.get("LABELS_PATH", "data/mfcc_output/labels.npy")
 MODEL_SAVE_PATH = "models/deepfake_cnn.pth"
 
 BATCH_SIZE = 32

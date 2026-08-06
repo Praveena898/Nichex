@@ -11,30 +11,54 @@ Usage:
 import librosa
 import numpy as np
 
-SR = 16000
+from src.features.audio_preprocess import (
+    SR,
+    DURATION,
+    load_audio_mono,
+    preprocess_speech_waveform,
+)
+
 N_MFCC = 40
-DURATION = 3.0
 MAX_FRAMES = 130
 
 
-def extract_mfcc(filepath_or_array, sr=SR, n_mfcc=N_MFCC, duration=DURATION, max_frames=MAX_FRAMES, is_array=False):
+def extract_mfcc(
+    filepath_or_array,
+    sr=SR,
+    n_mfcc=N_MFCC,
+    duration=DURATION,
+    max_frames=MAX_FRAMES,
+    is_array=False,
+    already_preprocessed=False,
+):
     """
     Extracts a fixed-size, normalized MFCC array from either:
-    - a filepath to a .wav file, OR
+    - a filepath to an audio file, OR
     - a raw numpy audio array already in memory (e.g. live mic chunk)
 
     Returns shape (n_mfcc, max_frames), e.g. (40, 130)
     """
-    if is_array:
-        y = filepath_or_array
-    else:
-        y, _ = librosa.load(filepath_or_array, sr=sr, mono=True, duration=duration)
 
-    target_len = int(sr * duration)
-    if len(y) < target_len:
-        y = np.pad(y, (0, target_len - len(y)))
+    if is_array:
+        if already_preprocessed:
+            y = filepath_or_array.astype(np.float32)
+            target_len = int(sr * duration)
+            if len(y) < target_len:
+                y = np.pad(y, (0, target_len - len(y)))
+            else:
+                y = y[:target_len]
+        else:
+            y = preprocess_speech_waveform(
+                filepath_or_array.astype(np.float32),
+                sr=sr,
+                clip_duration=duration,
+                pick_loudest_window=True,
+            )
     else:
-        y = y[:target_len]
+        y = load_audio_mono(filepath_or_array, sr=sr, duration=None)
+        y = preprocess_speech_waveform(
+            y, sr=sr, clip_duration=duration, pick_loudest_window=True
+        )
 
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
 
