@@ -28,14 +28,36 @@ def get_risk_color(score):
     else:
         return "RED"
 
-
 def assess_call_chunk(deepfake_prob, scam_language_prob):
     """
-    One call to rule them all — returns everything the demo UI needs
-    to display for a single 3-second chunk of the call.
+    Returns the final risk assessment by combining:
+    - Deepfake detection
+    - Scam language detection
+    - Rule-based overrides
     """
+
+    # Base weighted score
     score = calculate_risk_score(deepfake_prob, scam_language_prob)
+
+    # -----------------------------
+    # Rule-based overrides
+    # -----------------------------
+
+    # AI-generated voice
+    if deepfake_prob >= 0.8:
+        score = max(score, 90)
+
+    # Very strong scam language
+    elif scam_language_prob >= 0.7:
+        score = max(score, 80)
+
+    # Moderately suspicious language
+    elif scam_language_prob >= 0.5:
+        score = max(score, 60)
+
+    # Determine final color
     color = get_risk_color(score)
+
     return {
         "score": score,
         "color": color,
@@ -43,7 +65,6 @@ def assess_call_chunk(deepfake_prob, scam_language_prob):
         "scam_language_prob": round(scam_language_prob, 2),
         "alert_family": color == "RED"
     }
-
 
 if __name__ == "__main__":
     # Quick sanity tests
