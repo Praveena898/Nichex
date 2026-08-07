@@ -129,7 +129,7 @@ def analyze_audio_file(audio_path):
     # ---------------------------------------------------------
     # Step 5: Final Risk Assessment
     # ---------------------------------------------------------
-    assessment = assess_call_chunk(deepfake_prob, scam_prob)
+    assessment = assess_call_chunk(deepfake_prob, scam_prob,transcript)
 
     assessment["deepfake_prob_raw"] = round(deepfake_prob_raw, 2)
     assessment["deepfake_prob"] = round(deepfake_prob, 2)

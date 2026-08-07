@@ -27,43 +27,69 @@ def get_risk_color(score):
         return "YELLOW"
     else:
         return "RED"
+CRITICAL_KEYWORDS = [
+    "otp",
+    "pin",
+    "cvv",
+    "password",
+    "upi pin",
+    "net banking password",
+    "transfer money",
+    "wire transfer",
+    "gift card",
+    "remote access",
+    "anydesk",
+    "teamviewer"
+]
 
-def assess_call_chunk(deepfake_prob, scam_language_prob):
-    """
-    Returns the final risk assessment by combining:
-    - Deepfake detection
-    - Scam language detection
-    - Rule-based overrides
-    """
+SUSPICIOUS_KEYWORDS = [
+    "credentials",
+    "verify",
+    "identity",
+    "bank details",
+    "refund",
+    "income tax",
+    "blocked account",
+    "debit card",
+    "credit card",
+    "kyc",
+    "account details",
+    "unusual activity",
+    "suspicious activity"
+]
 
-    # Base weighted score
+def assess_call_chunk(deepfake_prob, scam_language_prob, transcript):
     score = calculate_risk_score(deepfake_prob, scam_language_prob)
 
-    # -----------------------------
-    # Rule-based overrides
-    # -----------------------------
+    text = transcript.lower()
 
-    # AI-generated voice
+    # AI voice
     if deepfake_prob >= 0.8:
         score = max(score, 90)
 
-    # Very strong scam language
-    elif scam_language_prob >= 0.7:
-        score = max(score, 80)
+    # Explicit scam phrases
+    elif any(word in text for word in CRITICAL_KEYWORDS):
+        score = max(score, 85)
 
-    # Moderately suspicious language
+    # Suspicious banking/social engineering
+    elif any(word in text for word in SUSPICIOUS_KEYWORDS):
+        score = max(score, 60)
+
+    # NLP fallback
+    elif scam_language_prob >= 0.9:
+        score = max(score, 75)
+
     elif scam_language_prob >= 0.5:
         score = max(score, 60)
 
-    # Determine final color
     color = get_risk_color(score)
 
     return {
         "score": score,
         "color": color,
-        "deepfake_prob": round(deepfake_prob, 2),
-        "scam_language_prob": round(scam_language_prob, 2),
-        "alert_family": color == "RED"
+        "deepfake_prob": round(deepfake_prob,2),
+        "scam_language_prob": round(scam_language_prob,2),
+        "alert_family": color=="RED"
     }
 
 if __name__ == "__main__":
