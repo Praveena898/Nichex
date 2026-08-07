@@ -8,7 +8,7 @@ This is what your demo calls every few seconds during a live call.
 
 
 def calculate_risk_score(deepfake_prob, scam_language_prob,
-                          deepfake_weight=0.6, scam_weight=0.4):
+                          deepfake_weight=0.5, scam_weight=0.5):
     """
     deepfake_prob: 0-1, from src/models/deepfake_cnn.py
     scam_language_prob: 0-1, from src/models/scam_nlp.py

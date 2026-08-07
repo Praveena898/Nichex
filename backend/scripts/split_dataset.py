@@ -53,22 +53,10 @@ def split_dataset(csv_path, label_col="label", save_prefix="dataset"):
 
 
 if __name__ == "__main__":
-    # Demo with a small synthetic dataset so you can see it work end-to-end.
-    # Replace this with your real combined_scam_dataset.csv or ASVspoof file list.
-    import numpy as np
-    np.random.seed(0)
-    demo_df = pd.DataFrame({
-        "text": [f"sample message {i}" for i in range(200)],
-        "label": np.random.choice([0, 1], size=200, p=[0.7, 0.3])
-    })
-    demo_df.to_csv("data/demo_dataset.csv", index=False)
-
     split_dataset(
-        "data/demo_dataset.csv",
+        "data/combined_scam_dataset.csv",
         label_col="label",
-        save_prefix="demo"
+        save_prefix="nlp"
     )
 
-    print("\n--- Now run this on your real files ---")
-    print("split_dataset('data/combined_scam_dataset.csv', save_prefix='nlp')")
-    print("split_dataset('data/asvspoof_filelist.csv', save_prefix='audio')")
+    print("\nDataset split completed successfully!")

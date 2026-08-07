@@ -58,39 +58,86 @@ def _load_models():
 def analyze_audio_file(audio_path):
     """
     Analyzes a single audio file end-to-end.
-    Returns a dict with score, color, probabilities, transcript, and
-    whether to alert the family.
+    Returns:
+        - risk score
+        - color
+        - deepfake probability
+        - scam language probability
+        - transcript
+        - transcript confidence
     """
+
     deepfake_model, scam_model, whisper_model = _load_models()
 
+    # ---------------------------------------------------------
+    # Step 1: Deepfake Voice Detection
+    # ---------------------------------------------------------
     mfcc = extract_mfcc(audio_path)
     deepfake_prob = predict_deepfake_probability(deepfake_model, mfcc)
 
-    transcript, transcript_confidence = transcribe_with_whisper(whisper_model, audio_path)
+    # ---------------------------------------------------------
+    # Step 2: Speech-to-Text
+    # ---------------------------------------------------------
+    transcript, transcript_confidence = transcribe_with_whisper(
+        whisper_model,
+        audio_path
+    )
 
-    if transcript_confidence < 0.35 or len(transcript) < 2:
-        # Noisy or failed STT — rely on voice model only; avoid false scam flags
+    # ---------------------------------------------------------
+    # Step 3: Scam Language Detection
+    # ---------------------------------------------------------
+    if transcript_confidence < 0.35 or len(transcript.strip()) < 2:
+        # Whisper failed or transcript unreliable
         scam_prob = 0.0
+
     else:
+
+        # Rule-based keyword score (0-1)
+        keyword_prob = keyword_score(transcript)
+
         try:
-            scam_prob = scam_model.combined_score(transcript)
+            # DistilBERT prediction
+            bert_prob = scam_model.combined_score(transcript)
+
+            # Use whichever detector is more confident
+            scam_prob = max(bert_prob, keyword_prob)
+
+            # Adjust using Whisper confidence
             scam_prob *= transcript_confidence
+
         except Exception:
-            scam_prob = keyword_score(transcript) * transcript_confidence
+            scam_prob = keyword_prob * transcript_confidence
 
-    # Clean phone/mic audio often mismatches ASVspoof-trained CNN features.
-    # If speech is clearly understood and non-scam, soften deepfake-only alarms.
+        # -----------------------------------------------------
+        # Keyword Boost
+        # If 2 or more scam keywords appear,
+        # raise suspicion slightly.
+        # -----------------------------------------------------
+        if keyword_prob >= 0.67:
+            scam_prob = min(1.0, scam_prob + 0.20)
+
+    # ---------------------------------------------------------
+    # Step 4: Deepfake Adjustment
+    # ---------------------------------------------------------
     deepfake_prob_raw = deepfake_prob
-    if transcript_confidence >= 0.75 and scam_prob < 0.2:
-        deepfake_prob = deepfake_prob * 0.45
 
+    # If transcript is very clear and language is harmless,
+    # reduce false deepfake alarms.
+    if transcript_confidence >= 0.75 and scam_prob < 0.20:
+        deepfake_prob *= 0.45
+
+    # ---------------------------------------------------------
+    # Step 5: Final Risk Assessment
+    # ---------------------------------------------------------
     assessment = assess_call_chunk(deepfake_prob, scam_prob)
+
     assessment["deepfake_prob_raw"] = round(deepfake_prob_raw, 2)
+    assessment["deepfake_prob"] = round(deepfake_prob, 2)
+    assessment["scam_language_prob"] = round(scam_prob, 2)
     assessment["transcript"] = transcript
     assessment["transcript_confidence"] = round(transcript_confidence, 2)
 
     return assessment
-
 
 if __name__ == "__main__":
     test_file = "data/asvspoof2019/LA/ASVspoof2019_LA_train/flac/LA_T_9999995.flac"

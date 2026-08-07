@@ -9,6 +9,7 @@ It appends your custom phrases as new rows.
 """
 
 import pandas as pd
+from pathlib import Path
 
 # label: 1 = scam/spam, 0 = safe/ham
 manual_scam_phrases = [
@@ -79,6 +80,13 @@ manual_scam_phrases = [
     "Your refund is pending, share bank details to receive",
     "Limited time offer, respond within 10 minutes",
     "We tried to deliver your package, pay customs fee",
+
+    "I need to discuss about your bank details",
+    "Unusual activity has been detected in your account",
+    "Please give your credentials right now",
+    "Some suspicious activity in your account needs verification",
+    "Please share your account information to fix the issue",
+    "We detected unusual activity please verify immediately",
 ]
 
 # A few safe/normal examples too, so the dataset isn't lopsided
@@ -95,6 +103,60 @@ manual_safe_phrases = [
     "The doctor's appointment is confirmed for Tuesday",
 ]
 
+extra_scam_phrases = [
+    "Hello ma'am, this is your bank speaking.",
+    "We detected unusual activity in your account.",
+    "Your account has been temporarily blocked.",
+    "Please verify your bank details immediately.",
+    "Can you confirm your account number?",
+    "Please provide your banking credentials.",
+    "Your KYC has expired.",
+    "Complete your KYC today.",
+    "Your debit card has been suspended.",
+    "Please verify your identity.",
+    "There has been suspicious activity on your account.",
+    "Please share your account information.",
+    "Your ATM card has been blocked.",
+    "Tell me your internet banking password.",
+    "Please confirm your debit card number.",
+    "Share your CVV number for verification.",
+    "We need your login details.",
+    "Your account will be frozen today.",
+    "Your account requires immediate verification.",
+    "Your bank account is under investigation.",
+    "We are calling from the fraud department.",
+    "Your account has been compromised.",
+    "We need to secure your account.",
+    "A suspicious login was detected.",
+    "Confirm your identity to prevent account closure.",
+]
+manual_scam_phrases.extend(extra_scam_phrases)
+
+extra_safe_phrases = [
+    "Did you have lunch?",
+    "I'll call you later.",
+    "Let's meet tomorrow.",
+    "I'm on my way home.",
+    "The groceries have arrived.",
+    "Happy anniversary!",
+    "The doctor said everything is fine.",
+    "I'll pick you up at 6 PM.",
+    "Your package has been delivered.",
+    "Thanks for your help.",
+    "Let's go shopping this weekend.",
+    "The kids reached school safely.",
+    "Dinner is ready.",
+    "Have a nice day!",
+    "I'll see you tomorrow.",
+]
+manual_safe_phrases.extend(extra_safe_phrases)
+
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
+
+
 def build_manual_dataset():
     rows = []
     for text in manual_scam_phrases:
@@ -106,13 +168,40 @@ def build_manual_dataset():
 
 if __name__ == "__main__":
     manual_df = build_manual_dataset()
+
     print(f"Created {len(manual_df)} manual examples "
           f"({sum(manual_df.label==1)} scam, {sum(manual_df.label==0)} safe)")
 
-    # Save standalone
-    manual_df.to_csv("/home/claude/digital_bodyguard/data/manual_scam_phrases.csv", index=False)
-    print("Saved to data/manual_scam_phrases.csv")
+    # Save manual dataset
+    output_file = DATA_DIR / "manual_scam_phrases.csv"
+    manual_df.to_csv(output_file, index=False)
+    print(f"Saved to {output_file}")
 
+    # Merge with base dataset if it exists
+    base_file = DATA_DIR / "combined_scam_dataset.csv"
+
+    if base_file.exists():
+        base_df = pd.read_csv(base_file)
+
+        combined_df = pd.concat([base_df, manual_df], ignore_index=True)
+
+        combined_df["text"] = combined_df["text"].str.strip()
+
+        # Remove duplicate texts
+        combined_df = (
+            pd.concat([base_df, manual_df], ignore_index=True)
+            .drop_duplicates(subset=["text"],keep="first")
+            .reset_index(drop=True)
+        )
+
+        combined_df.to_csv(base_file, index=False)
+
+        print(f"Updated dataset saved to {base_file}")
+        print(f"Final dataset size: {len(combined_df)}")
+        print(f"Scam samples: {(combined_df['label'] == 1).sum()}")
+        print(f"Safe samples: {(combined_df['label'] == 0).sum()}")
+    else:
+        print("Base dataset not found. Only manual dataset was created.")
     # If you already have the base SMS dataset downloaded, merge like this:
     # base_df = pd.read_csv("data/sms_spam_collection.csv")  # must have 'text','label' cols
     # combined_df = pd.concat([base_df, manual_df], ignore_index=True)
