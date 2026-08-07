@@ -61,6 +61,10 @@ class CallResult(BaseModel):
     confidence: float
     caller_number: Optional[str] = None
 
+    risk_score: Optional[int] = None
+    duration: Optional[str] = None
+    report: Optional[str] = None
+    keywords: Optional[str] = None
 
 class CallOut(BaseModel):
     id: int
@@ -200,3 +204,18 @@ class EmergencyContactResponse(BaseModel):
 
 # Alias so main.py can use either name
 ContactResponse = EmergencyContactResponse
+
+class CallLogOut(BaseModel):
+    log_id: int
+    user_id: int
+    timestamp: str
+    risk_score: int
+    color: str
+    deepfake_prob: float
+    scam_prob: float
+    transcript: str | None = None
+    alert_sent: bool
+    chunk_num: int
+
+    class Config:
+        from_attributes = True

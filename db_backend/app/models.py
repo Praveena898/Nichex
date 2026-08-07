@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
+from sqlalchemy import Text
 
 
 # ── Original tables ───────────────────────────────────────────────────────────
@@ -51,6 +52,12 @@ class Call(Base):
     caller_number = Column(String)
     verdict       = Column(String)
     confidence    = Column(Float)
+
+    risk_score    = Column(Integer, nullable=True)
+    duration      = Column(String, nullable=True)
+    report        = Column(Text, nullable=True)
+    keywords      = Column(Text, nullable=True)
+
     started_at    = Column(DateTime, default=datetime.utcnow)
     ended_at      = Column(DateTime, nullable=True)
 

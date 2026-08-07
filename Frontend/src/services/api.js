@@ -5,9 +5,10 @@ const api = axios.create({
 })
 
 // Send audio file → get risk result
-export async function analyzeAudio(audioFile, onProgress) {
+export async function analyzeAudio(audioFile, userId, onProgress) {
   const formData = new FormData()
   formData.append('audio', audioFile)
+  formData.append('user_id', userId)
   const requestPath = '/analyze'
   const requestUrl = `${api.defaults.baseURL}${requestPath}`
   console.log('[analyzeAudio] Request URL:', requestUrl)
@@ -64,5 +65,17 @@ export async function register(userData) {
 // Login user
 export async function login(credentials) {
   const response = await api.post('/auth/login', credentials)
+  return response.data
+}
+
+// Save analyzed call to database
+export async function saveCallResult(callData) {
+  const response = await api.post('/calls/result', callData)
+  return response.data
+}
+
+// Get logged-in user's call history
+export async function getUserCalls(userId) {
+  const response = await api.get(`/calls/${userId}`)
   return response.data
 }

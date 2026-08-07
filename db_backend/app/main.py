@@ -10,6 +10,7 @@ import os
 import sys
 import tempfile
 from typing import List
+from fastapi import Form
 
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -165,6 +166,7 @@ def list_settings(user_id: int, db: Session = Depends(get_db)):
 @app.post("/analyze", response_model=schemas.AnalysisResult)
 async def analyze_audio(
     audio: UploadFile = File(...),
+    user_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
     if not PIPELINE_AVAILABLE:
@@ -178,7 +180,9 @@ async def analyze_audio(
 
     try:
         result = analyze_audio_file(tmp_path)
-        crud.save_call_log(db, result)
+        result["user_id"] = user_id
+        user_id = int(result.get("user_id", 1))
+        crud.save_call_log(db, result, user_id)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -203,6 +207,9 @@ def get_recent_logs(db: Session = Depends(get_db)):
 def get_alert_logs(db: Session = Depends(get_db)):
     return crud.get_high_risk_logs(db)
 
+@app.get("/logs/{user_id}", response_model=List[schemas.CallLogOut])
+def get_logs(user_id: int, db: Session = Depends(get_db)):
+    return crud.get_logs_for_user(db, user_id)
 
 # ── Dashboard stats ───────────────────────────────────────────────────────────
 

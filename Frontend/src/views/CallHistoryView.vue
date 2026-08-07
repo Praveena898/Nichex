@@ -172,7 +172,8 @@ async function submitFile() {
   errorMsg.value = ''
 
   try {
-    const result = await analyzeAudio(selectedFile.value)
+    const userId = localStorage.getItem('digitalBodyguard.userId')
+    const result = await analyzeAudio(selectedFile.value, Number(userId))
 
     const colorToTag = { GREEN: 'safe', YELLOW: 'suspicious', RED: 'scam' }
     const tag = colorToTag[result.color] || 'suspicious'
@@ -196,7 +197,7 @@ async function submitFile() {
     if (err.code === 'ERR_NETWORK') {
       errorMsg.value = "Couldn't reach the backend server. Make sure it's running on http://localhost:5000."
     } else {
-      errorMsg.value = err.response?.data?.message || 'Something went wrong analyzing this file.'
+      errorMsg.value = err.response?.data?.detail || 'Something went wrong analyzing this file.'
     }
   }
 }
