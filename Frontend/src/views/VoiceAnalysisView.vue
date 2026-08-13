@@ -86,7 +86,8 @@ onMounted(async () => {
     const blob      = new Blob(chunks, { type: 'audio/webm' })
     const audioFile = new File([blob], 'call_recording.webm', { type: 'audio/webm' })
 
-    const result = await analyzeAudio(audioFile)
+    const userId = localStorage.getItem("digitalBodyguard.userId")
+    const result = await analyzeAudio(audioFile, userId)
     progress.value = 90
 
     // ── Step 3: Update UI with real results ───────────────────────────────────
