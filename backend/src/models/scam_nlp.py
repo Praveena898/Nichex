@@ -17,6 +17,10 @@ SCAM_KEYWORDS = [
     "wire transfer", "gift card", "social security", "bail money",
     "verify your identity", "blocked", "suspended", "click this link",
     "remote access", "bank account", "pin number", "claim your prize"
+
+    "credentials", "bank details", "unusual activity", "suspicious activity",
+    "verify your account", "account details", "fix it now", "right now",
+    "give your", "share your details", "financial details", "account information"
 ]
 
 

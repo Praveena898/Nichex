@@ -109,13 +109,13 @@ def get_settings_for_user(db: Session, user_id: int):
 
 # ── CallLog CRUD (Digital Bodyguard pipeline) ─────────────────────────────────
 
-def save_call_log(db: Session, result: dict) -> models.CallLog:
+def save_call_log(db: Session, result: dict, user_id: int)-> models.CallLog:
     """
     Saves one pipeline result to the database.
     result = the dict returned by Sarah's analyze_audio_file()
     """
     log = models.CallLog(
-        user_id       = 1,
+        user_id       = user_id,
         timestamp     = datetime.now().isoformat(),
         risk_score    = result.get("score", 0),
         color         = result.get("color", "GREEN"),
@@ -208,3 +208,11 @@ def create_contact(db: Session, contact: schemas.ContactCreate) -> models.Emerge
 
 def get_contacts_by_user(db: Session, user_id: int) -> list:
     return db.query(models.EmergencyContact).filter(models.EmergencyContact.user_id == user_id).all()
+
+def get_logs_for_user(db: Session, user_id: int):
+    return (
+        db.query(models.CallLog)
+        .filter(models.CallLog.user_id == user_id)
+        .order_by(models.CallLog.log_id.desc())
+        .all()
+    )

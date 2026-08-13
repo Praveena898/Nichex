@@ -24,6 +24,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
+from pathlib import Path
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -72,26 +73,34 @@ def build_bonafide_features(audio_paths, musan_root, copies_per_file, snr_range)
 
 def main():
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
-        "--audio",
-        nargs="+",
+        "--audio-folder",
         required=True,
-        help="One or more real (bonafide) recordings (.m4a, .wav, …)",
+        help="Folder containing real recordings"
     )
     parser.add_argument("--musan", default="", help="MUSAN root (optional)")
     parser.add_argument("--copies", type=int, default=30)
-    parser.add_argument("--epochs", type=int, default=12)
-    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--epochs", type=int, default=8)
+    parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--snr-min", type=float, default=3.0)
     parser.add_argument("--snr-max", type=float, default=18.0)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
+    audio_paths = []
+
+    for ext in ("*.wav", "*.mp3", "*.m4a", "*.flac"):
+        audio_paths.extend(Path(args.audio_folder).glob(ext))
+
+    audio_paths = [str(p) for p in audio_paths]
+
+    print(f"Found {len(audio_paths)} recordings.")
 
     random.seed(args.seed)
     np.random.seed(args.seed)
 
     x, y = build_bonafide_features(
-        args.audio,
+        audio_paths,
         args.musan or None,
         args.copies,
         (args.snr_min, args.snr_max),
