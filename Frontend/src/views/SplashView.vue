@@ -16,9 +16,14 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { t } from '../i18n'
+
 const router = useRouter()
+
 onMounted(() => {
-  setTimeout(() => router.push('/onboarding'), 1400)
+  setTimeout(() => {
+    const isLoggedIn = localStorage.getItem('digitalBodyguard.loggedIn') === '1'
+    router.replace(isLoggedIn ? '/dashboard' : '/onboarding')
+  }, 1400)
 })
 </script>
 

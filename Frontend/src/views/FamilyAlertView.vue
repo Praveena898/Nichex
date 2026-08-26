@@ -24,7 +24,7 @@
 
       <!-- Sent state -->
       <template v-else>
-        <div style="width:80px;height:80px;border-radius:50%; background:rgba(47,158,104,0.12); border:2px solid var(--green); display:flex;align-items:center;justify-content:center; font-size:32px; margin-bottom:18px;">✅</div>
+        <div style="width:80px;height:80px;border-radius:50%; background:rgba(47,158,104,0.12); border:2px solid var(--green); display:flex;align-items:center;justify-content:center; margin-bottom:18px;"><Icon name="check" :size="32" color="var(--green)" :stroke-width="2.5" /></div>
         <h2>Alert Successfully Sent</h2>
         <p class="muted" style="margin:8px 0 22px;">
           {{ contacts.length }} emergency contact{{ contacts.length === 1 ? '' : 's' }} notified about this call.
@@ -41,7 +41,7 @@
           <div class="divider"></div>
           <div class="row">
             <div class="muted">Sent at {{ time }} · Encrypted channel</div>
-            <button class="btn btn-ghost" style="width:auto; padding:8px 14px; margin:0; font-size:13px;" @click="startCall(c)">📞 Call {{ c.name.split(' ')[0] }}</button>
+            <button class="btn btn-ghost" style="width:auto; padding:8px 14px; margin:0; font-size:13px; display:inline-flex; align-items:center; gap:6px;" @click="startCall(c)"><Icon name="phone" :size="13" /> Call {{ c.name.split(' ')[0] }}</button>
           </div>
         </div>
 
@@ -60,7 +60,7 @@
         <div class="muted" style="margin-bottom:6px;">{{ callingContact.phone }}</div>
         <div style="color:var(--amber); font-weight:700; font-size:13px; margin-bottom:22px;">Calling…</div>
         <div style="display:flex; justify-content:center;">
-          <button @click="cancelCall" style="width:52px;height:52px;border-radius:50%;background:var(--red); border:none; color:#fff; font-size:20px;">✕</button>
+          <button @click="cancelCall" style="width:52px;height:52px;border-radius:50%;background:var(--red); border:none; color:#fff; display:flex; align-items:center; justify-content:center;"><Icon name="x" :size="20" color="#fff" :stroke-width="2.5" /></button>
         </div>
       </div>
     </div>
@@ -70,6 +70,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { addFamilyAlert } from '../familyAlertLog'
+import Icon from '../components/Icon.vue'
 
 const status = ref('sending')
 const contacts = ref([])

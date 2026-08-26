@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="topbar"><h2>{{ t('profile.title') }}</h2><router-link to="/settings" class="back">⚙️</router-link></div>
+    <div class="topbar"><h2>{{ t('profile.title') }}</h2><router-link to="/settings" class="back"><Icon name="settings" :size="18" /></router-link></div>
     <div class="content">
       <div style="text-align:center; margin-bottom:20px;">
         <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#8A93A8,#4A5A73); margin:0 auto 10px; display:flex;align-items:center;justify-content:center; color:#fff; font-size:26px; font-weight:700;">{{ initial }}</div>
@@ -15,7 +15,7 @@
             <path d="M12 20h9"/>
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
           </svg>
-          <span v-else style="font-size:12px; font-weight:700;">✕</span>
+          <Icon v-else name="x" :size="15" />
         </button>
       </div>
 
@@ -54,6 +54,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import AppShell from '../components/AppShell.vue'
 import { t } from '../i18n'
+import Icon from '../components/Icon.vue'
 
 const ACCOUNT_KEY = 'digitalBodyguard.account'
 

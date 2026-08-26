@@ -23,7 +23,18 @@
       <div v-if="errors.email" class="field-error">{{ errors.email }}</div>
 
       <label class="label">{{ t('register.passwordLabel') }}</label>
-      <input class="field" type="password" v-model="form.password" placeholder="Create a password (min 6 characters)" :style="errors.password ? 'border-color:var(--red);' : ''" />
+      <div class="password-wrap">
+        <input class="field" :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="Create a password (min 6 characters)" :style="errors.password ? 'border-color:var(--red);' : ''" />
+        <button type="button" class="eye-btn" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+          <svg v-if="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+            <path d="M1 1l22 22"/>
+          </svg>
+        </button>
+      </div>
       <div v-if="errors.password" class="field-error">{{ errors.password }}</div>
 
       <label class="label">{{ t('settings.language') }}</label>
@@ -34,13 +45,7 @@
         <option value="ml">മലയാളം (Malayalam)</option>
       </select>
 
-      <div class="divider"></div>
-
-      <label class="label">{{ t('register.contactLabel') }}</label>
-      <input class="field" v-model="form.contactName" placeholder="Contact name" />
-      <input class="field" v-model="form.contactPhone" placeholder="Contact phone number" />
-
-      <div v-if="formError" class="field-error" style="margin-bottom:12px;">{{ formError }}</div>
+      <div v-if="formError" class="field-error" style="margin-bottom:12px; margin-top:12px;">{{ formError }}</div>
 
       <button class="btn btn-primary" @click="handleRegister">{{ t('register.button') }}</button>
       <p class="muted" style="text-align:center;">
@@ -57,9 +62,10 @@ import { t, setLocale, locale } from '../i18n'
 import { register } from '../services/api'
 
 const router = useRouter()
+const showPassword = ref(false)
 
 const form = reactive({
-  name:'', phone:'', email:'', password:'', contactName:'', contactPhone:'',
+  name: '', phone: '', email: '', password: '',
   language: locale.value
 })
 
@@ -67,7 +73,7 @@ watch(() => form.language, (newLang) => {
   setLocale(newLang)
 })
 
-const errors = reactive({ name:'', phone:'', email:'', password:'' })
+const errors = reactive({ name: '', phone: '', email: '', password: '' })
 const formError = ref('')
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -96,7 +102,6 @@ async function handleRegister() {
   if (!validate()) return
 
   try {
-
     const user = await register({
       name: form.name,
       email: form.email.trim().toLowerCase(),
@@ -105,14 +110,14 @@ async function handleRegister() {
     })
 
     localStorage.setItem(
-  'digitalBodyguard.account',
-  JSON.stringify({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    phone: user.phone
-  })
-)
+      'digitalBodyguard.account',
+      JSON.stringify({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone
+      })
+    )
 
     localStorage.setItem('digitalBodyguard.loggedIn', '1')
     localStorage.setItem('digitalBodyguard.userId', user.id)
@@ -120,13 +125,10 @@ async function handleRegister() {
     setLocale(form.language)
 
     router.push('/dashboard')
-
   } catch (err) {
-
     formError.value =
       err.response?.data?.detail ||
       'Registration failed.'
-
   }
 }
 </script>
@@ -149,4 +151,23 @@ async function handleRegister() {
   font-size: 12px;
   margin: -6px 0 12px;
 }
+.password-wrap {
+  position: relative;
+}
+.password-wrap .field {
+  padding-right: 42px;
+}
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.eye-btn:hover { color: var(--navy); }
 </style>

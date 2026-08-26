@@ -19,8 +19,10 @@
       </div>
 
       <button class="btn btn-danger" style="margin-top:18px;" @click="$router.push('/dashboard')">End Call</button>
-      <button class="btn btn-primary" @click="$router.push('/family-alert')">🚨 Call Family</button>
+      <button class="btn btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px;" @click="$router.push('/family-alert')"><Icon name="alert-triangle" :size="16" /> Call Family</button>
     </div>
   </div>
 </template>
-<script setup></script>
+<script setup>
+import Icon from '../components/Icon.vue'
+</script>

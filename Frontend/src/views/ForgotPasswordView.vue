@@ -40,7 +40,7 @@
       <!-- Step 3: success -->
       <template v-else>
         <div style="text-align:center; padding-top:30px;">
-          <div style="width:70px;height:70px;border-radius:50%; background:rgba(47,158,104,0.12); border:2px solid var(--green); display:flex;align-items:center;justify-content:center; font-size:28px; margin:0 auto 18px;">✅</div>
+          <div style="width:70px;height:70px;border-radius:50%; background:rgba(47,158,104,0.12); border:2px solid var(--green); display:flex;align-items:center;justify-content:center; margin:0 auto 18px;"><Icon name="check" :size="28" color="var(--green)" :stroke-width="2.5" /></div>
           <h2>Password Updated</h2>
           <p class="muted" style="margin:8px 0 24px;">You can now log in with your new password.</p>
           <button class="btn btn-primary" @click="$router.push('/login')">Go to Login</button>
@@ -53,6 +53,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import Icon from './Icon.vue'
 
 const step = ref('verify')
 const email = ref('')

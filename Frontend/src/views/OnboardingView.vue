@@ -2,7 +2,9 @@
 <template>
   <div class="page">
     <div class="content" style="display:flex; flex-direction:column; justify-content:center; padding-top:40px;">
-      <div style="text-align:center; font-size:56px; margin-bottom:8px;">{{ slides[step].emoji }}</div>
+      <div style="display:flex; justify-content:center; margin-bottom:8px;">
+        <Icon :name="slides[step].icon" :size="56" color="var(--navy)" :stroke-width="1.5" />
+      </div>
       <h2 style="text-align:center; margin-bottom:10px;">{{ slides[step].title }}</h2>
       <p class="muted" style="text-align:center; padding:0 10px;">{{ slides[step].body }}</p>
 
@@ -19,10 +21,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import Icon from './Icon.vue'
 const step = ref(0)
 const slides = [
-  { emoji:'📞', title:'Every call, watched over', body:'Digital Bodyguard listens quietly in the background for signs of scams and AI-cloned voices.' },
-  { emoji:'🛡️', title:'Instant colour warnings', body:'Green, yellow or red — simple signals that tell you exactly how safe a call is, in real time.' },
-  { emoji:'👪', title:'Family is one tap away', body:'If something looks wrong, your family is alerted instantly — no complicated steps required.' },
+  { icon:'phone', title:'Every call, watched over', body:'Digital Bodyguard listens quietly in the background for signs of scams and AI-cloned voices.' },
+  { icon:'shield', title:'Instant colour warnings', body:'Green, yellow or red — simple signals that tell you exactly how safe a call is, in real time.' },
+  { icon:'users', title:'Family is one tap away', body:'If something looks wrong, your family is alerted instantly — no complicated steps required.' },
 ]
 </script>
