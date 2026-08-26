@@ -22,11 +22,6 @@ const routes = [
   { path: '/help', name: 'help', component: () => import('../views/HelpSupportView.vue') },
   { path: '/about', name: 'about', component: () => import('../views/AboutView.vue') },
   { path: '/logout', name: 'logout', component: () => import('../views/LogoutConfirmView.vue') },
-  {
-  path: '/live-monitor',
-  name: 'live-monitor',
-  component: () => import('../views/LiveMonitorView.vue')
-}
 ]
 
 export default createRouter({

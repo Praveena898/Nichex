@@ -111,6 +111,29 @@
           </div>
         </div>
       </div>
+
+<!-- LIVE CALL MONITOR -->
+<button
+  class="btn btn-primary"
+  style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;"
+  @click="$router.push('/live-monitor')"
+>
+  📞 Start Live Call Monitor
+</button>
+
+<!-- EMERGENCY -->
+<button
+  class="btn btn-danger"
+  style="display:flex; align-items:center; justify-content:center; gap:8px;"
+  @click="$router.push('/family-alert')"
+>
+  <Icon
+    name="alert-triangle"
+    :size="16"
+  />
+  {{ t('dashboard.emergency') }}
+</button>
+
       <div class="label">
         {{ t('dashboard.recent') }}
       </div>
@@ -178,26 +201,6 @@
           {{ t('dashboard.contacts') }}
         </button>
       </div>
-
-      <button
-        class="btn btn-primary"
-        style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;"
-        @click="$router.push('/live-monitor')"
-      >
-        📞 Start Live Call Monitor
-      </button>
-
-      <button
-        class="btn btn-danger"
-        style="display:flex; align-items:center; justify-content:center; gap:8px;"
-        @click="$router.push('/family-alert')"
-      >
-        <Icon
-          name="alert-triangle"
-          :size="16"
-        />
-        {{ t('dashboard.emergency') }}
-      </button>
     </div>
 
     <AppShell

@@ -11,13 +11,12 @@ import sys
 import tempfile
 from typing import List
 from fastapi import Form
-from .models import EmergencyContact
 
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from . import crud, schemas, analyze
+from . import crud, schemas
 from .database import get_db, engine, Base
 
 # Creates all tables on startup
@@ -52,8 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(analyze.router)
 
 
 # ── Root ──────────────────────────────────────────────────────────────────────
@@ -213,10 +210,6 @@ def get_alert_logs(db: Session = Depends(get_db)):
 @app.get("/logs/{user_id}", response_model=List[schemas.CallLogOut])
 def get_logs(user_id: int, db: Session = Depends(get_db)):
     return crud.get_logs_for_user(db, user_id)
-
-@app.get("/emergency/{user_id}")
-def get_emergency(user_id: int, db: Session = Depends(get_db)):
-    return db.query(EmergencyContact).filter(EmergencyContact.user_id == user_id).first()
 
 # ── Dashboard stats ───────────────────────────────────────────────────────────
 
