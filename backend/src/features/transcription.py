@@ -10,11 +10,11 @@ import numpy as np
 
 from src.features.audio_preprocess import SR, preprocess_speech_waveform, load_audio_mono
 
-WHISPER_MODEL_NAME = os.environ.get("WHISPER_MODEL", "base")
-WHISPER_LANGUAGE = os.environ.get("WHISPER_LANGUAGE", "en")
+WHISPER_MODEL_NAME = os.environ.get("WHISPER_MODEL", "large")
+WHISPER_LANGUAGE = os.environ.get("WHISPER_LANGUAGE", None)
 
 
-def transcribe_with_whisper(whisper_model, audio_path: str) -> tuple[str, float]:
+def transcribe_with_whisper(whisper_model, audio_path: str) -> tuple[str, float,str]:
     """
     Returns (transcript, confidence in 0–1).
     Confidence is low when Whisper is guessing/hallucinating on noise.
@@ -24,21 +24,29 @@ def transcribe_with_whisper(whisper_model, audio_path: str) -> tuple[str, float]
         y, sr=SR, clip_duration=None, pick_loudest_window=False
     )
 
-    result = whisper_model.transcribe(
-        y,
-        language=WHISPER_LANGUAGE,
+    kwargs = dict(
         fp16=False,
         condition_on_previous_text=False,
         no_speech_threshold=0.6,
         logprob_threshold=-1.0,
         compression_ratio_threshold=2.4,
-        initial_prompt="Phone call conversation between family members.",
+        initial_prompt=(
+            "Phone call conversation. "
+            "The speakers may speak English, Hindi, Tamil, or Malayalam."
+        )
     )
+
+    if WHISPER_LANGUAGE:
+        kwargs["language"] = WHISPER_LANGUAGE
+
+    result = whisper_model.transcribe(y, **kwargs)
 
     text = (result.get("text") or "").strip()
     confidence = _transcript_confidence(result)
-    return text, confidence
+    language = (result.get("language") or "en").lower()
 
+
+    return text, confidence, language
 
 def _transcript_confidence(result: dict) -> float:
     segments = result.get("segments") or []

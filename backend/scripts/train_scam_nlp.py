@@ -25,10 +25,18 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.optim import AdamW
 import os
 
-MODEL_NAME = "distilbert-base-uncased"
-TRAIN_CSV = "data/nlp_train.csv"
-VAL_CSV = "data/nlp_val.csv"
-SAVE_DIR = "models/scam_distilbert"
+# ===========================
+# Select which model to train
+# ===========================
+
+MODEL_NAME = "google/muril-base-cased"
+# MODEL_NAME = "distilbert-base-uncased"
+
+TRAIN_CSV = "data/multilingual_train.csv"
+VAL_CSV = "data/multilingual_val.csv"
+
+SAVE_DIR = "models/scam_muril"
+# SAVE_DIR = "models/scam_distilbert"
 
 BATCH_SIZE = 16
 EPOCHS = 3

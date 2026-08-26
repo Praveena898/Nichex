@@ -3,13 +3,18 @@ The full Digital Bodyguard pipeline — connects both trained models into
 one function you call with an audio file and get back a real risk assessment.
 
 Flow:
-    audio file (.flac/.wav/.m4a)
+    audio file (.flac/.wav/.m4a/.opus)
         ↓
-    mfcc_extractor  →  deepfake_cnn  →  deepfake_prob (real)
+    MFCC extractor → Deepfake CNN → deepfake_prob
         ↓
-    whisper STT  →  scam_nlp  →  scam_language_prob (real)
+    Whisper STT → language detection
         ↓
-    risk_engine  →  score + color + alert_family (real)
+    Scam NLP
+        ├── English → DistilBERT
+        ├── Hindi/Tamil/Malayalam → MuRIL
+        └── Mixed language → BOTH models → higher probability
+        ↓
+    Risk Engine → score + color + alert_family
 """
 
 import os
@@ -18,140 +23,529 @@ from pathlib import Path
 
 import whisper
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Make backend available for imports
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 
-from src.features.mfcc_extractor import extract_mfcc
-from src.features.transcription import transcribe_with_whisper, WHISPER_MODEL_NAME
-from src.models.deepfake_cnn import load_deepfake_model, predict_deepfake_probability
-from src.models.scam_nlp import ScamNLPModel, keyword_score
-from src.risk_engine import assess_call_chunk
+from src.features.mfcc_extractor import (
+    extract_mfcc
+)
+
+from src.features.transcription import (
+    transcribe_with_whisper,
+    WHISPER_MODEL_NAME
+)
+
+from src.models.deepfake_cnn import (
+    load_deepfake_model,
+    predict_deepfake_probability
+)
+
+from src.models.scam_nlp import (
+    ScamNLPModel,
+    keyword_score
+)
+
+from src.risk_engine import (
+    assess_call_chunk
+)
+
+
+# =========================================================
+# MODEL PATHS
+# =========================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-DEEPFAKE_MODEL_PATH = PROJECT_ROOT / "backend" / "models" / "deepfake_cnn.pth"
-SCAM_MODEL_PATH = PROJECT_ROOT / "backend" / "models" / "scam_distilbert"
+DEEPFAKE_MODEL_PATH = (
+    PROJECT_ROOT
+    / "backend"
+    / "models"
+    / "deepfake_cnn.pth"
+)
+
+ENGLISH_MODEL_PATH = (
+    PROJECT_ROOT
+    / "backend"
+    / "models"
+    / "scam_distilbert"
+)
+
+MURIL_MODEL_PATH = (
+    PROJECT_ROOT
+    / "backend"
+    / "models"
+    / "scam_muril"
+)
+
+
+# =========================================================
+# MODEL CACHE
+# =========================================================
 
 _deepfake_model = None
-_scam_model = None
+_english_model = None
+_muril_model = None
 _whisper_model = None
 
 
+# =========================================================
+# LOAD MODELS
+# =========================================================
+
 def _load_models():
-    """Lazy-loads all three models on first call, caches for reuse."""
-    global _deepfake_model, _scam_model, _whisper_model
+    """Lazy-load all models. Models are loaded only once."""
+
+    global _deepfake_model, _english_model, _muril_model, _whisper_model
 
     if _deepfake_model is None:
         print("Loading deepfake CNN model...")
-        _deepfake_model = load_deepfake_model(DEEPFAKE_MODEL_PATH)
+        _deepfake_model = load_deepfake_model(
+            DEEPFAKE_MODEL_PATH
+        )
 
-    if _scam_model is None:
-        print("Loading scam NLP model...")
-        _scam_model = ScamNLPModel(model_path=SCAM_MODEL_PATH)
+    if _english_model is None:
+        print("Loading English DistilBERT...")
+        _english_model = ScamNLPModel(
+            model_path=ENGLISH_MODEL_PATH
+        )
+
+    if _muril_model is None:
+        print("Loading MuRIL...")
+        _muril_model = ScamNLPModel(
+            model_path=MURIL_MODEL_PATH
+        )
 
     if _whisper_model is None:
-        print(f"Loading Whisper speech-to-text model ({WHISPER_MODEL_NAME})...")
-        _whisper_model = whisper.load_model(WHISPER_MODEL_NAME)
+        print(
+            f"Loading Whisper speech-to-text model "
+            f"({WHISPER_MODEL_NAME})..."
+        )
+        _whisper_model = whisper.load_model(
+            WHISPER_MODEL_NAME
+        )
 
-    return _deepfake_model, _scam_model, _whisper_model
+    return (
+        _deepfake_model,
+        _english_model,
+        _muril_model,
+        _whisper_model
+    )
+# =========================================================
+# MIXED LANGUAGE DETECTION
+# =========================================================
 
+def is_mixed_language(text):
+    """
+    Detect whether the transcript contains both:
+
+        1. English/Latin characters
+        2. Indian-language characters
+
+    Supported Indian scripts:
+
+        Hindi      → Devanagari
+        Tamil      → Tamil
+        Malayalam  → Malayalam
+
+    Examples:
+
+        "Hello कृपया OTP बताइए"
+            → True
+
+        "Hello வணக்கம்"
+            → True
+
+        "Hello നിങ്ങളുടെ ബാങ്ക്"
+            → True
+
+        "Hello please verify my account"
+            → False
+
+        "कृपया अपना OTP बताइए"
+            → False
+    """
+
+    has_english_script = False
+    has_indian_script = False
+
+    for ch in text:
+
+        code = ord(ch)
+
+        # -------------------------------------------------
+        # Hindi / Devanagari
+        # -------------------------------------------------
+
+        if 0x0900 <= code <= 0x097F:
+
+            has_indian_script = True
+
+        # -------------------------------------------------
+        # Tamil
+        # -------------------------------------------------
+
+        elif 0x0B80 <= code <= 0x0BFF:
+
+            has_indian_script = True
+
+        # -------------------------------------------------
+        # Malayalam
+        # -------------------------------------------------
+
+        elif 0x0D00 <= code <= 0x0D7F:
+
+            has_indian_script = True
+
+        # -------------------------------------------------
+        # English / Latin alphabet
+        # -------------------------------------------------
+
+        elif ch.isascii() and ch.isalpha():
+
+            has_english_script = True
+
+    return (
+        has_english_script
+        and has_indian_script
+    )
+
+
+# =========================================================
+# ANALYZE AUDIO
+# =========================================================
 
 def analyze_audio_file(audio_path):
+
     """
     Analyzes a single audio file end-to-end.
+
     Returns:
-        - risk score
-        - color
-        - deepfake probability
-        - scam language probability
-        - transcript
-        - transcript confidence
+
+        risk score
+        risk color
+        deepfake probability
+        scam language probability
+        transcript
+        transcript confidence
+        detected language
     """
 
-    deepfake_model, scam_model, whisper_model = _load_models()
+    # -----------------------------------------------------
+    # Load all models
+    # -----------------------------------------------------
 
-    # ---------------------------------------------------------
-    # Step 1: Deepfake Voice Detection
-    # ---------------------------------------------------------
-    mfcc = extract_mfcc(audio_path)
-    deepfake_prob = predict_deepfake_probability(deepfake_model, mfcc)
+    (
+        deepfake_model,
+        english_model,
+        muril_model,
+        whisper_model
+    ) = _load_models()
 
-    # ---------------------------------------------------------
-    # Step 2: Speech-to-Text
-    # ---------------------------------------------------------
-    transcript, transcript_confidence = transcribe_with_whisper(
+
+    # =====================================================
+    # STEP 1 — DEEPFAKE VOICE DETECTION
+    # =====================================================
+
+    mfcc = extract_mfcc(
+        audio_path
+    )
+
+    deepfake_prob = predict_deepfake_probability(
+        deepfake_model,
+        mfcc
+    )
+
+
+    # =====================================================
+    # STEP 2 — WHISPER SPEECH-TO-TEXT
+    # =====================================================
+
+    (
+        transcript,
+        transcript_confidence,
+        language
+    ) = transcribe_with_whisper(
         whisper_model,
         audio_path
     )
 
-    # ---------------------------------------------------------
-    # Step 3: Scam Language Detection
-    # ---------------------------------------------------------
-    if transcript_confidence < 0.35 or len(transcript.strip()) < 2:
-        # Whisper failed or transcript unreliable
+    print(
+        f"Detected language: {language}"
+    )
+
+
+    # =====================================================
+    # STEP 3 — SCAM LANGUAGE DETECTION
+    # =====================================================
+
+    if (
+        transcript_confidence < 0.35
+        or len(transcript.strip()) < 2
+    ):
+
+        # Whisper failed or transcript is unreliable
+
         scam_prob = 0.0
 
     else:
 
-        # Rule-based keyword score (0-1)
-        keyword_prob = keyword_score(transcript)
+        # -------------------------------------------------
+        # Rule-based keyword detector
+        # -------------------------------------------------
+
+        keyword_prob = keyword_score(
+            transcript
+        )
 
         try:
-            # DistilBERT prediction
-            bert_prob = scam_model.combined_score(transcript)
 
-            # Use whichever detector is more confident
-            scam_prob = max(bert_prob, keyword_prob)
+            # =================================================
+            # CASE 1 — MIXED LANGUAGE
+            # =================================================
 
-            # Adjust using Whisper confidence
-            scam_prob *= transcript_confidence
+            if is_mixed_language(transcript):
 
-        except Exception:
-            scam_prob = keyword_prob * transcript_confidence
+                print(
+                    "Mixed language detected"
+                )
 
-        # -----------------------------------------------------
-        # Keyword Boost
-        # If 2 or more scam keywords appear,
-        # raise suspicion slightly.
-        # -----------------------------------------------------
+                # Run BOTH models
+
+                english_prob = (
+                    english_model
+                    .combined_score(transcript)
+                )
+
+                muril_prob = (
+                    muril_model
+                    .combined_score(transcript)
+                )
+
+                print(
+                    f"English DistilBERT probability: "
+                    f"{english_prob:.2f}"
+                )
+
+                print(
+                    f"MuRIL probability: "
+                    f"{muril_prob:.2f}"
+                )
+
+                # Take the stronger detector
+
+                bert_prob = max(
+                    english_prob,
+                    muril_prob
+                )
+
+
+            # =================================================
+            # CASE 2 — ENGLISH
+            # =================================================
+
+            elif language.startswith("en"):
+
+                print(
+                    "Using English DistilBERT"
+                )
+
+                bert_prob = (
+                    english_model
+                    .combined_score(transcript)
+                )
+
+
+            # =================================================
+            # CASE 3 — INDIAN / OTHER LANGUAGE
+            # =================================================
+
+            else:
+
+                print(
+                    f"Using MuRIL ({language})"
+                )
+
+                bert_prob = (
+                    muril_model
+                    .combined_score(transcript)
+                )
+
+
+            # -------------------------------------------------
+            # Combine NLP + keyword detector
+            # -------------------------------------------------
+
+            scam_prob = max(
+                bert_prob,
+                keyword_prob
+            )
+
+
+            # -------------------------------------------------
+            # Whisper confidence adjustment
+            # -------------------------------------------------
+
+            if transcript_confidence < 0.35:
+
+                scam_prob = keyword_prob
+
+            elif transcript_confidence < 0.55:
+
+                scam_prob *= 0.90
+
+
+        except Exception as e:
+
+            print(
+                f"NLP model error: {e}"
+            )
+
+            # Fall back to keyword detector
+
+            scam_prob = (
+                keyword_prob
+                * transcript_confidence
+            )
+
+
+        # =================================================
+        # KEYWORD BOOST
+        # =================================================
+
         if keyword_prob >= 0.67:
-            scam_prob = min(1.0, scam_prob + 0.20)
 
-    # ---------------------------------------------------------
-    # Step 4: Deepfake Adjustment
-    # ---------------------------------------------------------
+            scam_prob = min(
+                1.0,
+                scam_prob + 0.20
+            )
+
+
+    # =====================================================
+    # STEP 4 — DEEPFAKE ADJUSTMENT
+    # =====================================================
+
     deepfake_prob_raw = deepfake_prob
 
-    # If transcript is very clear and language is harmless,
-    # reduce false deepfake alarms.
-    if transcript_confidence >= 0.75 and scam_prob < 0.20:
+    # If speech is very clear and scam probability
+    # is very low, reduce possible false deepfake alarm.
+
+    if (
+        transcript_confidence >= 0.75
+        and scam_prob < 0.20
+    ):
+
         deepfake_prob *= 0.45
 
-    # ---------------------------------------------------------
-    # Step 5: Final Risk Assessment
-    # ---------------------------------------------------------
-    assessment = assess_call_chunk(deepfake_prob, scam_prob,transcript)
 
-    assessment["deepfake_prob_raw"] = round(deepfake_prob_raw, 2)
-    assessment["deepfake_prob"] = round(deepfake_prob, 2)
-    assessment["scam_language_prob"] = round(scam_prob, 2)
+    # =====================================================
+    # STEP 5 — FINAL RISK ASSESSMENT
+    # =====================================================
+
+    assessment = assess_call_chunk(
+        deepfake_prob,
+        scam_prob,
+        transcript
+    )
+
+
+    # =====================================================
+    # ADD EXTRA INFORMATION
+    # =====================================================
+
+    assessment["deepfake_prob_raw"] = round(
+        deepfake_prob_raw,
+        2
+    )
+
+    assessment["deepfake_prob"] = round(
+        deepfake_prob,
+        2
+    )
+
+    assessment["scam_language_prob"] = round(
+        scam_prob,
+        2
+    )
+
     assessment["transcript"] = transcript
-    assessment["transcript_confidence"] = round(transcript_confidence, 2)
+
+    assessment["transcript_confidence"] = round(
+        transcript_confidence,
+        2
+    )
+
+    assessment["language"] = language
+
 
     return assessment
 
+
+# =========================================================
+# TESTING
+# =========================================================
+
 if __name__ == "__main__":
-    test_file = "data/asvspoof2019/LA/ASVspoof2019_LA_train/flac/LA_T_9999995.flac"
 
-    print("Running full pipeline on test file...")
-    print(f"File: {test_file}\n")
+    test_file = (
+        "data/asvspoof2019/"
+        "LA/ASVspoof2019_LA_train/flac/"
+        "LA_T_9999995.flac"
+    )
 
-    result = analyze_audio_file(test_file)
+    print(
+        "Running full pipeline on test file..."
+    )
 
-    print("\n--- RESULT ---")
-    print(f"Transcript:      '{result['transcript']}'")
-    print(f"Transcript conf: {result.get('transcript_confidence')}")
-    print(f"Deepfake prob:   {result['deepfake_prob']}")
-    print(f"Scam lang prob:  {result['scam_language_prob']}")
-    print(f"Risk score:      {result['score']}/100")
-    print(f"Color:           {result['color']}")
-    print(f"Alert family:    {result['alert_family']}")
+    print(
+        f"File: {test_file}\n"
+    )
+
+    result = analyze_audio_file(
+        test_file
+    )
+
+    print(
+        "\n--- RESULT ---"
+    )
+
+    print(
+        f"Transcript:      "
+        f"'{result['transcript']}'"
+    )
+
+    print(
+        f"Language:        "
+        f"{result.get('language')}"
+    )
+
+    print(
+        f"Transcript conf: "
+        f"{result.get('transcript_confidence')}"
+    )
+
+    print(
+        f"Deepfake prob:   "
+        f"{result['deepfake_prob']}"
+    )
+
+    print(
+        f"Scam lang prob:  "
+        f"{result['scam_language_prob']}"
+    )
+
+    print(
+        f"Risk score:      "
+        f"{result['score']}/100"
+    )
+
+    print(
+        f"Color:           "
+        f"{result['color']}"
+    )
+
+    print(
+        f"Alert family:    "
+        f"{result['alert_family']}"
+    )

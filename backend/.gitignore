@@ -41,3 +41,10 @@ logs/
 
 # ffmpeg (system tool, not project code)
 backend/ffmpeg-master-latest-win64-gpl-shared/
+
+real_recordings/
+models.zip
+backend.zip
+app_demo.mp4
+models/*_before*.pth
+models/*_candidate.pth

@@ -54,9 +54,9 @@ def split_dataset(csv_path, label_col="label", save_prefix="dataset"):
 
 if __name__ == "__main__":
     split_dataset(
-        "data/combined_scam_dataset.csv",
+        "data/multilingual_scam_dataset.csv",
         label_col="label",
-        save_prefix="nlp"
+        save_prefix="multilingual"
     )
 
     print("\nDataset split completed successfully!")

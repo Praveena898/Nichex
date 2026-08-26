@@ -12,7 +12,7 @@ import librosa
 import numpy as np
 
 SR = 16000
-DURATION = 3.0
+DURATION = 3.0  
 
 
 def reduce_background_noise(y: np.ndarray, sr: int = SR) -> np.ndarray:
