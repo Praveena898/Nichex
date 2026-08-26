@@ -7,13 +7,22 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
 from . import models, schemas
+from .auth import verify_password, hash_password
 
 
 # ---------- USERS (original) ----------
 
-def create_user_by_email(db: Session, name: str, email: str, password_hash: str, phone: str = None):
-    """Original registration-based user creation (for auth/register endpoint)"""
-    user = models.User(name=name, email=email, password_hash=password_hash, phone=phone)
+def create_user_by_email(db: Session, name: str, email: str, password: str, phone: str = None):
+    """Create user with a properly hashed password."""
+    hashed_password = hash_password(password)
+
+    user = models.User(
+        name=name,
+        email=email,
+        password_hash=hashed_password,
+        phone=phone
+    )
+
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -184,7 +193,7 @@ def authenticate_user(db: Session, email: str, password: str):
     if not user:
         return None
 
-    if user.password_hash != password:
+    if not verify_password(password, user.password_hash):
         return None
 
     return user

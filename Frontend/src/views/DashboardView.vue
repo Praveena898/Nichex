@@ -111,7 +111,6 @@
           </div>
         </div>
       </div>
-
       <div class="label">
         {{ t('dashboard.recent') }}
       </div>
@@ -179,6 +178,14 @@
           {{ t('dashboard.contacts') }}
         </button>
       </div>
+
+      <button
+        class="btn btn-primary"
+        style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;"
+        @click="$router.push('/live-monitor')"
+      >
+        📞 Start Live Call Monitor
+      </button>
 
       <button
         class="btn btn-danger"
